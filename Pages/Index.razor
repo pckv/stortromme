@@ -4,17 +4,26 @@
 @inject LobbyService LobbyService
 @inject LobbyEvents LobbyEvents
 
-<div>
-    Name:
-    <input @bind="PlayerName" class="input-group-text">
+<div class="container">
+    <div class="row">
+        <div class="col-sm-3">
+            <h4>Name: </h4>
+            <input @bind="PlayerName" class="form-control" placeholder="name">
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm-3">
+            <h4>Lobby name:</h4>
+            <input @bind="LobbyName" class="form-control" placeholder="lobby name">
+        </div>
+    </div>
+    <div class="divider"></div>
+    <div class="row">
+        <div class="col-sm-3">
+            <button @onclick="CreateOrJoinLobby" class="btn btn-primary">Join or create lobby</button>
+        </div>
+    </div>
 </div>
-<div>
-    Lobby:
-    <input @bind="LobbyName" class="input-group-text">
-</div>
-
-
-<button @onclick="CreateOrJoinLobby" class="btn btn-primary">Join or create lobby</button>
 
 @if (ConnectedLobby != null) {
     <h1>Connected to @ConnectedLobby.Name</h1>
