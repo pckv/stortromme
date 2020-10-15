@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using broken_picturephone_blazor.Data;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Hosting;
@@ -27,6 +28,7 @@ namespace broken_picturephone_blazor
         {
             services.AddRazorPages();
             services.AddServerSideBlazor();
+            services.AddSingleton<LobbyService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
