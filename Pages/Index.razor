@@ -2,11 +2,19 @@
 
 @using broken_picturephone_blazor.Data
 @inject LobbyService LobbyService
+@inject LobbyEvents LobbyEvents
 
-<input @bind="PlayerName">
-<input @bind="LobbyName">
+<div>
+    Name:
+    <input @bind="PlayerName" class="input-group-text">
+</div>
+<div>
+    Lobby:
+    <input @bind="LobbyName" class="input-group-text">
+</div>
 
-<button @onclick="CreateOrJoinLobby">Join or create lobby.</button>
+
+<button @onclick="CreateOrJoinLobby" class="btn btn-primary">Join or create lobby</button>
 
 @if (ConnectedLobby != null) {
     <h1>Connected to @ConnectedLobby.Name</h1>
@@ -27,8 +35,23 @@
     public String LobbyName { get; set; }
     public Lobby ConnectedLobby { get; set;}
 
+    protected override async Task OnInitializedAsync()
+    {
+        LobbyEvents.OnLobbyUpdated += OnLobbyUpdated;
+    }
+
     public void CreateOrJoinLobby()
     {
         ConnectedLobby = LobbyService.CreateOrJoinLobby(PlayerName, LobbyName);
+        LobbyEvents.UpdateLobby(ConnectedLobby);
+    }
+
+    public async void OnLobbyUpdated(Lobby lobby)
+    {
+        if (ConnectedLobby != null && ConnectedLobby.Name == lobby.Name)
+        {
+            ConnectedLobby = lobby;
+            await InvokeAsync(StateHasChanged);
+        }
     }
 }

@@ -28,7 +28,9 @@ namespace broken_picturephone_blazor
         {
             services.AddRazorPages();
             services.AddServerSideBlazor();
+
             services.AddSingleton<LobbyService>();
+            services.AddSingleton<LobbyEvents>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

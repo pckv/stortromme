@@ -33,6 +33,10 @@ namespace broken_picturephone_blazor.Data
             {
                 // Error: found existing connected player
             }
+            else
+            {
+                player.IsConnected = true;
+            }
 
             lobby.Players.Add(player);
 
