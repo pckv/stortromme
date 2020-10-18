@@ -13,16 +13,24 @@ namespace broken_picturephone_blazor.Data
             lobbies = new List<Lobby>();
         }
 
-        public Lobby CreateOrUseLobby(string name)
+        public (Lobby, Player) CreateOrJoinLobby(string lobbyName, string playerName)
         {
-            Lobby lobby = lobbies.FirstOrDefault(l => l.Name == name);
+            Lobby lobby = lobbies.FirstOrDefault(l => l.Name == lobbyName);
             if (lobby == null)
             {
-                lobby = new Lobby { Name = name };
+                lobby = new Lobby { Name = lobbyName };
                 lobbies.Add(lobby);
             }
 
-            return lobby;
+            // Throw when a connected player with the same name is already in
+            // the lobby
+            if (lobby.HasConnectedPlayer(playerName))
+            {
+                throw new PlayerExistsException();
+            }
+
+            Player player = lobby.AddPlayer(playerName);
+            return (lobby, player);
         }
 
         public void LeaveLobby(Player player, Lobby lobby)
@@ -35,5 +43,9 @@ namespace broken_picturephone_blazor.Data
                 lobbies.Remove(lobby);
             }
         }
+    }
+
+    public class PlayerExistsException : Exception
+    {
     }
 }

@@ -43,10 +43,10 @@ else
                 }
                 @if (us.IsModerator && player != us)
                 {
-                    <button @onclick="@(() => lobby.KickPlayer(us, player))" class="btn btn-outline-danger">Kick</button>
+                    <button @onclick="@(() => lobby.KickPlayer(player))" class="btn btn-outline-danger">Kick</button>
                     @if (!player.IsModerator) 
                     {
-                        <button @onclick="@(() => lobby.MakeModerator(us, player))" class="btn btn-outline-info">Make moderator</button>
+                        <button @onclick="@(() => lobby.MakeModerator(player))" class="btn btn-outline-info">Make moderator</button>
                     }
                 }
             </li>
@@ -65,15 +65,12 @@ else
 
     public void CreateOrJoinLobby()
     {
-        lobby = LobbyService.CreateOrUseLobby(lobbyName);
-
         try
         {
-            us = lobby.AddPlayer(playerName);
+            (lobby, us) = LobbyService.CreateOrJoinLobby(lobbyName, playerName);
         }
         catch (PlayerExistsException)
         {
-            lobby = null;
             // TODO: display error
             return;
         }

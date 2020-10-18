@@ -20,29 +20,20 @@ namespace broken_picturephone_blazor.Data
             OnPlayerRemoved += (_player) => OnLobbyUpdated?.Invoke();
         }
 
+        public bool HasConnectedPlayer(string name)
+        {
+            return Players.Any(p => p.IsNameEqual(name) && !p.IsConnected);
+        }
+
         public Player AddPlayer(string name)
         {
-            Player player = Players.FirstOrDefault(p => p.IsNameEqual(name));
-            if (player == null) 
-            {
-                player = new Player {
-                    Name = name,
-                    IsConnected = true,
-                };
-            }
-            else if (player.IsConnected)
-            {
-                throw new PlayerExistsException();
-            }
-            else
-            {
-                player.IsConnected = true;
-            }
-
-            if (Players.Count == 0)
-            {
-                player.IsModerator = true;
-            }
+            // Assign to existing player or create a new one. This is presumed 
+            // no connected player is already in the lobby with the same name.
+            Player player = Players.FirstOrDefault(p => p.IsNameEqual(name)) 
+                ?? new Player { Name = name };
+            
+            player.IsConnected = true;
+            player.IsModerator = Players.Count == 0;
 
             Players.Add(player);
             OnLobbyUpdated?.Invoke();
@@ -52,12 +43,6 @@ namespace broken_picturephone_blazor.Data
 
         public void RemovePlayer(Player player)
         {
-            // Skip if the player does not exist in the lobby
-            if (!Players.Contains(player))
-            {
-                return;
-            }
-
             Players.Remove(player);
             OnPlayerRemoved?.Invoke(player);
 
@@ -69,25 +54,12 @@ namespace broken_picturephone_blazor.Data
             }
         }
 
-        public void KickPlayer(Player moderator, Player player)
-        {
-            if (moderator.IsModerator)
-            {
-                RemovePlayer(player);
-            }
-        }
+        public void KickPlayer(Player player) => RemovePlayer(player);
 
-        public void MakeModerator(Player moderator, Player player)
+        public void MakeModerator(Player player)
         {
-            if (moderator.IsModerator)
-            {
-                player.IsModerator = true;
-                OnLobbyUpdated?.Invoke();
-            }
+            player.IsModerator = true;
+            OnLobbyUpdated?.Invoke();
         }
-    }
-
-    public class PlayerExistsException : Exception
-    {
     }
 }
