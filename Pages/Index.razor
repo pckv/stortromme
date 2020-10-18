@@ -1,38 +1,65 @@
 @page "/"
 
+@using broken_picturephone_blazor.Services
 @using broken_picturephone_blazor.Data
 @inject LobbyService LobbyService
-@inject LobbyEvents LobbyEvents
+@implements IDisposable
 
-<div class="container">
-    <div class="row">
-        <div class="col-sm-3">
-            <h4>Name: </h4>
-            <input @bind="PlayerName" class="form-control" placeholder="name">
+<style>
+    .disconnected {
+        text-decoration: line-through;
+    }
+</style>
+
+@if (lobby == null)
+{
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-3">
+                <h4>Name: </h4>
+                <input @bind="playerName" class="form-control" placeholder="name">
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-3">
+                <h4>Lobby name:</h4>
+                <input @bind="lobbyName" class="form-control" placeholder="lobby name">
+            </div>
+        </div>
+        <div class="divider"></div>
+        <div class="row">
+            <div class="col-sm-3">
+                <button @onclick="CreateOrJoinLobby" class="btn btn-primary">Join or create lobby</button>
+            </div>
         </div>
     </div>
-    <div class="row">
-        <div class="col-sm-3">
-            <h4>Lobby name:</h4>
-            <input @bind="LobbyName" class="form-control" placeholder="lobby name">
-        </div>
-    </div>
-    <div class="divider"></div>
-    <div class="row">
-        <div class="col-sm-3">
-            <button @onclick="CreateOrJoinLobby" class="btn btn-primary">Join or create lobby</button>
-        </div>
-    </div>
-</div>
+}
+else 
+{
+    <h1>Connected to @lobby.Name as @us.Name</h1>
+    <button @onclick="LeaveLobby" class="btn btn-primary">Leave lobby</button>
 
-@if (ConnectedLobby != null) {
-    <h1>Connected to @ConnectedLobby.Name</h1>
-
-    <h3>Players (@ConnectedLobby.Players.Count)</h3>
+    <h3>Players (@lobby.Players.Count)</h3>
     <ul>
-        @foreach (var player in ConnectedLobby.Players)
+        @foreach (var player in lobby.Players)
         {
-            <li>@player.Name</li>
+            <li>
+                <span class="@(player.IsConnected ? "" : "disconnected")">
+                    @player.Name
+                </span>
+                @if (player.IsModerator)
+                {
+                    <strong> M</strong>
+                }
+                @if (us.IsModerator && player != us)
+                {
+                    <button @onclick="@(() => lobby.KickPlayer(player))" class="btn btn-outline-danger">Kick</button>
+                    @if (!player.IsModerator) 
+                    {
+                        <button @onclick="@(() => lobby.MakeModerator(player))" class="btn btn-outline-info">Make moderator</button>
+                    }
+                }
+            </li>
         }
     </ul>
 }
@@ -40,27 +67,62 @@
 
 @code
 {
-    public string PlayerName { get; set; }
-    public String LobbyName { get; set; }
-    public Lobby ConnectedLobby { get; set;}
+    private string playerName;
+    private string lobbyName;
 
-    protected override async Task OnInitializedAsync()
-    {
-        LobbyEvents.OnLobbyUpdated += OnLobbyUpdated;
-    }
+    private Player us;
+    private Lobby lobby;
 
     public void CreateOrJoinLobby()
     {
-        ConnectedLobby = LobbyService.CreateOrJoinLobby(PlayerName, LobbyName);
-        LobbyEvents.UpdateLobby(ConnectedLobby);
+        try
+        {
+            (lobby, us) = LobbyService.CreateOrJoinLobby(lobbyName, playerName);
+        }
+        catch (PlayerExistsException)
+        {
+            // TODO: display error
+            return;
+        }
+
+        lobby.OnLobbyUpdated += OnLobbyUpdated;
+        lobby.OnPlayerRemoved += OnPlayerRemoved;
     }
 
-    public async void OnLobbyUpdated(Lobby lobby)
+    public void LeaveLobby()
     {
-        if (ConnectedLobby != null && ConnectedLobby.Name == lobby.Name)
+        LobbyService.LeaveLobby(us, lobby);
+    }
+
+    public async void OnLobbyUpdated()
+    {
+        await InvokeAsync(StateHasChanged);
+    }
+
+    public async void OnPlayerRemoved(Player player)
+    {
+        if (player == us)
         {
-            ConnectedLobby = lobby;
+            CleanupEvents();
+            player = null;
+            lobby = null;
+
             await InvokeAsync(StateHasChanged);
+        }
+    }
+
+    public void CleanupEvents()
+    {
+        lobby.OnLobbyUpdated -= OnLobbyUpdated;
+        lobby.OnPlayerRemoved -= OnPlayerRemoved;
+    }
+
+    public void Dispose()
+    {
+        if (lobby != null)
+        {
+            CleanupEvents();
+            lobby.DisconnectPlayer(us);
         }
     }
 }

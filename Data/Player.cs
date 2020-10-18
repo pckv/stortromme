@@ -4,6 +4,7 @@ namespace broken_picturephone_blazor.Data
     {
         public string Name { get; set; }
         public bool IsConnected { get; set; }
+        public bool IsModerator { get; set; }
 
         public bool IsNameEqual(string name)
         {
