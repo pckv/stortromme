@@ -28,25 +28,25 @@
 }
 else 
 {
-    <h1>Connected to @lobby.Name as @player.Name</h1>
+    <h1>Connected to @lobby.Name as @us.Name</h1>
     <button @onclick="LeaveLobby" class="btn btn-primary">Leave lobby</button>
 
     <h3>Players (@lobby.Players.Count)</h3>
     <ul>
-        @foreach (var p in lobby.Players)
+        @foreach (var player in lobby.Players)
         {
             <li>
-                @p.Name
-                @if (p.IsModerator)
+                @player.Name
+                @if (player.IsModerator)
                 {
                     <strong> M</strong>
                 }
-                @if (player.IsModerator && p != player)
+                @if (us.IsModerator && player != us)
                 {
-                    <button @onclick="@(() => KickPlayer(p))" class="btn btn-outline-danger">Kick</button>
-                    @if (!p.IsModerator) 
+                    <button @onclick="@(() => lobby.KickPlayer(us, player))" class="btn btn-outline-danger">Kick</button>
+                    @if (!player.IsModerator) 
                     {
-                        <button @onclick="@(() => MakeModerator(p))" class="btn btn-outline-info">Make moderator</button>
+                        <button @onclick="@(() => lobby.MakeModerator(us, player))" class="btn btn-outline-info">Make moderator</button>
                     }
                 }
             </li>
@@ -60,7 +60,7 @@ else
     private string playerName;
     private string lobbyName;
 
-    private Player player;
+    private Player us;
     private Lobby lobby;
 
     public void CreateOrJoinLobby()
@@ -69,22 +69,12 @@ else
         lobby.OnLobbyUpdated += OnLobbyUpdated;
         lobby.OnPlayerRemoved += OnPlayerRemoved;
 
-        player = lobby.AddPlayer(playerName);
+        us = lobby.AddPlayer(playerName);
     }
 
     public void LeaveLobby()
     {
-        LobbyService.LeaveLobby(player, lobby);
-    }
-
-    public void KickPlayer(Player player)
-    {
-        lobby.KickPlayer(this.player, player);
-    }
-
-    public void MakeModerator(Player player)
-    {
-        lobby.MakeModerator(this.player, player);
+        LobbyService.LeaveLobby(us, lobby);
     }
 
     public async void OnLobbyUpdated()
@@ -94,7 +84,7 @@ else
 
     public async void OnPlayerRemoved(Player player)
     {
-        if (player == this.player)
+        if (player == us)
         {
             lobby.OnLobbyUpdated -= OnLobbyUpdated;
             lobby.OnPlayerRemoved -= OnPlayerRemoved;
