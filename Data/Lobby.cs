@@ -29,15 +29,19 @@ namespace broken_picturephone_blazor.Data
         {
             // Assign to existing player or create a new one. This is presumed 
             // no connected player is already in the lobby with the same name.
-            Player player = Players.FirstOrDefault(p => p.IsNameEqual(name)) 
-                ?? new Player { Name = name };
-            
+            Player player = Players.FirstOrDefault(p => p.IsNameEqual(name));
+            if (player == null)
+            {
+                player = new Player { 
+                    Name = name,
+                    IsModerator = Players.Count == 0,
+                };
+                Players.Add(player);
+            }
+                        
             player.IsConnected = true;
-            player.IsModerator = Players.Count == 0;
 
-            Players.Add(player);
             OnLobbyUpdated?.Invoke();
-
             return player;
         }
 
@@ -52,6 +56,12 @@ namespace broken_picturephone_blazor.Data
                 Players.First().IsModerator = true;
                 OnLobbyUpdated?.Invoke();
             }
+        }
+
+        public void DisconnectPlayer(Player player)
+        {
+            player.IsConnected = false;
+            OnLobbyUpdated?.Invoke();
         }
 
         public void KickPlayer(Player player) => RemovePlayer(player);

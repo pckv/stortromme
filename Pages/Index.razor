@@ -3,6 +3,13 @@
 @using broken_picturephone_blazor.Services
 @using broken_picturephone_blazor.Data
 @inject LobbyService LobbyService
+@implements IDisposable
+
+<style>
+    .disconnected {
+        text-decoration: line-through;
+    }
+</style>
 
 @if (lobby == null)
 {
@@ -37,7 +44,9 @@ else
         @foreach (var player in lobby.Players)
         {
             <li>
-                @player.Name
+                <span class="@(player.IsConnected ? "" : "disconnected")">
+                    @player.Name
+                </span>
                 @if (player.IsModerator)
                 {
                     <strong> M</strong>
@@ -94,13 +103,26 @@ else
     {
         if (player == us)
         {
-            lobby.OnLobbyUpdated -= OnLobbyUpdated;
-            lobby.OnPlayerRemoved -= OnPlayerRemoved;
-
+            CleanupEvents();
             player = null;
             lobby = null;
 
             await InvokeAsync(StateHasChanged);
+        }
+    }
+
+    public void CleanupEvents()
+    {
+        lobby.OnLobbyUpdated -= OnLobbyUpdated;
+        lobby.OnPlayerRemoved -= OnPlayerRemoved;
+    }
+
+    public void Dispose()
+    {
+        if (lobby != null)
+        {
+            CleanupEvents();
+            lobby.DisconnectPlayer(us);
         }
     }
 }
