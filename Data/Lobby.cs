@@ -22,7 +22,7 @@ namespace broken_picturephone_blazor.Data
 
         public bool HasConnectedPlayer(string name)
         {
-            return Players.Any(p => p.IsNameEqual(name) && !p.IsConnected);
+            return Players.Any(p => p.IsNameEqual(name) && p.IsConnected);
         }
 
         public Player AddPlayer(string name)
