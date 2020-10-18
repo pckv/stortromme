@@ -66,10 +66,20 @@ else
     public void CreateOrJoinLobby()
     {
         lobby = LobbyService.CreateOrUseLobby(lobbyName);
+
+        try
+        {
+            us = lobby.AddPlayer(playerName);
+        }
+        catch (PlayerExistsException)
+        {
+            lobby = null;
+            // TODO: display error
+            return;
+        }
+
         lobby.OnLobbyUpdated += OnLobbyUpdated;
         lobby.OnPlayerRemoved += OnPlayerRemoved;
-
-        us = lobby.AddPlayer(playerName);
     }
 
     public void LeaveLobby()

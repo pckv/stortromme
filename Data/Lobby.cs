@@ -32,7 +32,7 @@ namespace broken_picturephone_blazor.Data
             }
             else if (player.IsConnected)
             {
-                // Error: found existing connected player
+                throw new PlayerExistsException();
             }
             else
             {
@@ -52,6 +52,7 @@ namespace broken_picturephone_blazor.Data
 
         public void RemovePlayer(Player player)
         {
+            // Skip if the player does not exist in the lobby
             if (!Players.Contains(player))
             {
                 return;
@@ -60,7 +61,7 @@ namespace broken_picturephone_blazor.Data
             Players.Remove(player);
             OnPlayerRemoved?.Invoke(player);
 
-            // Assign the first player as moderator if a moderator was removed
+            // Assign the first player as moderator if all moderators were removed
             if (Players.Count > 0 && Players.All(p => !p.IsModerator))
             {
                 Players.First().IsModerator = true;
@@ -84,5 +85,9 @@ namespace broken_picturephone_blazor.Data
                 OnLobbyUpdated?.Invoke();
             }
         }
+    }
+
+    public class PlayerExistsException : Exception
+    {
     }
 }
