@@ -53,10 +53,19 @@ namespace broken_picturephone_blazor.Data
 
         public void RemovePlayer(Player player)
         {
-            if (Players.Contains(player))
+            if (!Players.Contains(player))
             {
-                Players.Remove(player);
-                OnPlayerRemoved?.Invoke(player);
+                return;
+            }
+
+            Players.Remove(player);
+            OnPlayerRemoved?.Invoke(player);
+
+            // Assign the first player as moderator if a moderator was removed
+            if (Players.Count > 0 && Players.All(p => !p.IsModerator))
+            {
+                Players.First().IsModerator = true;
+                OnLobbyUpdated?.Invoke();
             }
         }
 
