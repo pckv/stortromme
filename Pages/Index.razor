@@ -4,27 +4,27 @@
 @inject LobbyService LobbyService
 
 @if (lobby == null) {
-<div class="container">
-    <div class="row">
-        <div class="col-sm-3">
-            <h4>Name: </h4>
-            <input @bind="playerName" class="form-control" placeholder="name">
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-3">
+                <h4>Name: </h4>
+                <input @bind="playerName" class="form-control" placeholder="name">
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-3">
+                <h4>Lobby name:</h4>
+                <input @bind="lobbyName" class="form-control" placeholder="lobby name">
+            </div>
+        </div>
+        <div class="divider"></div>
+        <div class="row">
+            <div class="col-sm-3">
+                <button @onclick="CreateOrJoinLobby" class="btn btn-primary">Join or create lobby</button>
+            </div>
         </div>
     </div>
-    <div class="row">
-        <div class="col-sm-3">
-            <h4>Lobby name:</h4>
-            <input @bind="lobbyName" class="form-control" placeholder="lobby name">
-        </div>
-    </div>
-    <div class="divider"></div>
-    <div class="row">
-        <div class="col-sm-3">
-            <button @onclick="CreateOrJoinLobby" class="btn btn-primary">Join or create lobby</button>
-        </div>
-    </div>
-</div>
-}
+    }
 else {
     <h1>Connected to @lobby.Name as @player.Name</h1>
     <button @onclick="LeaveLobby" class="btn btn-primary">Leave lobby</button>
@@ -33,7 +33,17 @@ else {
     <ul>
         @foreach (var p in lobby.Players)
         {
-            <li>@p.Name</li>
+            <li>
+                @p.Name
+                @if (p.IsModerator)
+                {
+                    <strong> M</strong>
+                }
+                @if (player.IsModerator && p != player)
+                {
+                    <button @onclick="@(() => KickPlayer(p))" class="btn">Kick</button>
+                }
+            </li>
         }
     </ul>
 }
@@ -51,21 +61,37 @@ else {
     {
         lobby = LobbyService.CreateOrUseLobby(lobbyName);
         lobby.OnLobbyUpdated += OnLobbyUpdated;
+        lobby.OnPlayerRemoved += OnPlayerRemoved;
 
         player = lobby.AddPlayer(playerName);
     }
 
     public void LeaveLobby()
     {
-        lobby.OnLobbyUpdated -= OnLobbyUpdated;
         lobby.RemovePlayer(player);
+    }
 
-        player = null;
-        lobby = null;
+    public void KickPlayer(Player player)
+    {
+        lobby.KickPlayer(this.player, player);
     }
 
     public async void OnLobbyUpdated()
     {
         await InvokeAsync(StateHasChanged);
+    }
+
+    public async void OnPlayerRemoved(Player player)
+    {
+        if (player == this.player)
+        {
+            lobby.OnLobbyUpdated -= OnLobbyUpdated;
+            lobby.OnPlayerRemoved -= OnPlayerRemoved;
+
+            player = null;
+            lobby = null;
+
+            await InvokeAsync(StateHasChanged);
+        }
     }
 }
