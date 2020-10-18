@@ -45,8 +45,4 @@ namespace broken_picturephone_blazor.Services
             }
         }
     }
-
-    public class PlayerExistsException : Exception
-    {
-    }
 }
