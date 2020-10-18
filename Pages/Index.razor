@@ -3,7 +3,8 @@
 @using broken_picturephone_blazor.Data
 @inject LobbyService LobbyService
 
-@if (lobby == null) {
+@if (lobby == null)
+{
     <div class="container">
         <div class="row">
             <div class="col-sm-3">
@@ -24,8 +25,9 @@
             </div>
         </div>
     </div>
-    }
-else {
+}
+else 
+{
     <h1>Connected to @lobby.Name as @player.Name</h1>
     <button @onclick="LeaveLobby" class="btn btn-primary">Leave lobby</button>
 
@@ -41,7 +43,11 @@ else {
                 }
                 @if (player.IsModerator && p != player)
                 {
-                    <button @onclick="@(() => KickPlayer(p))" class="btn">Kick</button>
+                    <button @onclick="@(() => KickPlayer(p))" class="btn btn-outline-danger">Kick</button>
+                    @if (!p.IsModerator) 
+                    {
+                        <button @onclick="@(() => MakeModerator(p))" class="btn btn-outline-info">Make moderator</button>
+                    }
                 }
             </li>
         }
@@ -74,6 +80,11 @@ else {
     public void KickPlayer(Player player)
     {
         lobby.KickPlayer(this.player, player);
+    }
+
+    public void MakeModerator(Player player)
+    {
+        lobby.MakeModerator(this.player, player);
     }
 
     public async void OnLobbyUpdated()

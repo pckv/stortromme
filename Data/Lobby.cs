@@ -10,14 +10,13 @@ namespace broken_picturephone_blazor.Data
         public IList<Player> Players { get; set; }
 
         public event Action OnLobbyUpdated;
-        public event Action<Player> OnPlayerAdded;
         public event Action<Player> OnPlayerRemoved;
 
         public Lobby()
         {
             Players = new List<Player>();
 
-            OnPlayerAdded += (_player) => OnLobbyUpdated?.Invoke();
+            // Invoke OnLobbyUpdated for any more specific lobby update events
             OnPlayerRemoved += (_player) => OnLobbyUpdated?.Invoke();
         }
 
@@ -46,7 +45,7 @@ namespace broken_picturephone_blazor.Data
             }
 
             Players.Add(player);
-            OnPlayerAdded?.Invoke(player);
+            OnLobbyUpdated?.Invoke();
 
             return player;
         }
@@ -74,6 +73,15 @@ namespace broken_picturephone_blazor.Data
             if (moderator.IsModerator)
             {
                 RemovePlayer(player);
+            }
+        }
+
+        public void MakeModerator(Player moderator, Player player)
+        {
+            if (moderator.IsModerator)
+            {
+                player.IsModerator = true;
+                OnLobbyUpdated?.Invoke();
             }
         }
     }
