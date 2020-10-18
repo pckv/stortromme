@@ -24,5 +24,16 @@ namespace broken_picturephone_blazor.Data
 
             return lobby;
         }
+
+        public void LeaveLobby(Player player, Lobby lobby)
+        {
+            lobby.RemovePlayer(player);
+
+            // Remove lobby from service when empty
+            if (lobby.Players.Count == 0)
+            {
+                lobbies.Remove(lobby);
+            }
+        }
     }
 }
