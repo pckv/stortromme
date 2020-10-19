@@ -11,13 +11,13 @@
     <div class="row">
         <div class="col-sm-3">
             <h4>Name: </h4>
-            <input @bind="playerName" class="form-control" placeholder="name">
+            <input @bind="this.playerName" class="form-control" placeholder="name">
         </div>
     </div>
     <div class="row">
         <div class="col-sm-3">
             <h4>Lobby name:</h4>
-            <input @bind="lobbyName" class="form-control" placeholder="lobby name">
+            <input @bind="this.lobbyName" class="form-control" placeholder="lobby name">
         </div>
     </div>
     <div class="divider"></div>
@@ -32,23 +32,20 @@
 @code {
     private string playerName;
     private string lobbyName;
-    private Player us;
-    private Lobby lobby;
 
     public void CreateOrJoinLobby()
     {
         try
         {
-            (lobby, us) = LobbyService.CreateOrJoinLobby(lobbyName, playerName);
+            var (lobby, player) = LobbyService.CreateOrJoinLobby(this.lobbyName, this.playerName);
+            
+            PlayerService.lobby = lobby;
+            PlayerService.player = player;
+            NavigationManager.NavigateTo("/lobby");
         }
         catch (PlayerExistsException)
         {
             // TODO: display error
-            return;
         }
-
-        PlayerService.lobby = lobby;
-        PlayerService.us = us;
-        NavigationManager.NavigateTo("/lobby");
     }
 }

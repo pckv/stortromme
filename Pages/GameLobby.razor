@@ -15,14 +15,14 @@
 </style>
 
 <Navbar/>
-@if (lobby != null)
+@if (this.lobby != null)
 {
-    <h1>Connected to @lobby.Name as @us.Name</h1>
+    <h1>Connected to @this.lobby.Name as @this.player.Name</h1>
     <button @onclick="LeaveLobby" class="btn btn-primary">Leave lobby</button>
 
-    <h3>Players (@lobby.Players.Count)</h3>
+    <h3>Players (@this.lobby.Players.Count)</h3>
     <ul>
-        @foreach (var player in lobby.Players)
+        @foreach (var player in this.lobby.Players)
         {
             <li>
                 <span class="@(player.IsConnected ? "" : "disconnected")">
@@ -32,18 +32,18 @@
                 {
                     <strong> M</strong>
                 }
-                @if (us.IsModerator && player != us)
+                @if (this.player != player && this.player.IsModerator)
                 {
-                    <button @onclick="@(() => lobby.KickPlayer(player))" class="btn btn-outline-danger">Kick</button>
+                    <button @onclick="@(() => this.lobby.KickPlayer(player))" class="btn btn-outline-danger">Kick</button>
                     @if (!player.IsModerator) 
                     {
-                        <button @onclick="@(() => lobby.MakeModerator(player))" class="btn btn-outline-info">Make moderator</button>
+                        <button @onclick="@(() => this.lobby.MakeModerator(player))" class="btn btn-outline-info">Make moderator</button>
                     }
                 }
             </li>
         }
     </ul>
-    @if (us.IsModerator) {
+    @if (this.player.IsModerator) {
         <button class="btn btn-primary" @onclick="(() => startGame())">Start game</button>
     }
 } else 
@@ -57,13 +57,25 @@
 @code
 {
     [Parameter]
-    public string lobbyName{ get; set; }
-    private Player us;
+    public string lobbyName { get; set; }
+    private Player player;
     private Lobby lobby;
+
+    protected override void OnInitialized()
+    {
+        this.lobby = PlayerService.lobby;
+        this.player = PlayerService.player;
+
+        if (this.player != null && this.lobby != null)
+        {
+            this.lobby.OnLobbyUpdated += OnLobbyUpdated;
+            this.lobby.OnPlayerRemoved += OnPlayerRemoved;
+        }
+    }
 
     public void LeaveLobby()
     {
-        LobbyService.LeaveLobby(us, lobby);
+        LobbyService.LeaveLobby(this.player, this.lobby);
         NavigationManager.NavigateTo("/");
     }
 
@@ -75,11 +87,12 @@
 
     public async void OnPlayerRemoved(Player player)
     {
-        if (player == us)
+        if (this.player == player)
         {
             CleanupEvents();
-            player = null;
-            lobby = null;
+
+            this.player = null;
+            this.lobby = null;
 
             await InvokeAsync(StateHasChanged);
         }
@@ -87,31 +100,20 @@
 
     public void startGame() {}
 
-    protected override void OnInitialized()
-    {
-        base.OnInitialized();
-        lobby = PlayerService.lobby;
-        us = PlayerService.us;
-        if (us != null && lobby != null)
-        {
-            lobby.OnLobbyUpdated += OnLobbyUpdated;
-            lobby.OnPlayerRemoved += OnPlayerRemoved;
-        }
-    }
-
     public void CleanupEvents()
     {
         PlayerService.Clear();
-        lobby.OnLobbyUpdated -= OnLobbyUpdated;
-        lobby.OnPlayerRemoved -= OnPlayerRemoved;
+        this.lobby.OnLobbyUpdated -= OnLobbyUpdated;
+        this.lobby.OnPlayerRemoved -= OnPlayerRemoved;
     }
 
     public void Dispose()
     {
-        if (lobby != null)
+        if (this.lobby != null)
         {
             CleanupEvents();
-            lobby.DisconnectPlayer(us);
+
+            this.lobby.DisconnectPlayer(player);
         }
     }
 }
