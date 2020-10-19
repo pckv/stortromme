@@ -11,6 +11,7 @@ namespace broken_picturephone_blazor.Data
 
         public event Action OnLobbyUpdated;
         public event Action<Player> OnPlayerRemoved;
+        public event Action<Player> OnPlayerKicked;
 
         public Lobby()
         {
@@ -58,13 +59,17 @@ namespace broken_picturephone_blazor.Data
             }
         }
 
+        public void KickPlayer(Player player)
+        {
+            OnPlayerKicked?.Invoke(player);
+            RemovePlayer(player);
+        }
+
         public void DisconnectPlayer(Player player)
         {
             player.IsConnected = false;
             OnLobbyUpdated?.Invoke();
         }
-
-        public void KickPlayer(Player player) => RemovePlayer(player);
 
         public void MakeModerator(Player player)
         {
