@@ -39,8 +39,8 @@
         {
             var (lobby, player) = LobbyService.CreateOrJoinLobby(this.lobbyName, this.playerName);
             
-            PlayerService.lobby = lobby;
-            PlayerService.player = player;
+            PlayerService.Lobby = lobby;
+            PlayerService.Player = player;
             NavigationManager.NavigateTo("/lobby");
         }
         catch (PlayerExistsException)
