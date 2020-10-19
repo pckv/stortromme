@@ -1,0 +1,117 @@
+@page "/lobby"
+
+@using broken_picturephone_blazor.Services
+@using broken_picturephone_blazor.Data
+@using broken_picturephone_blazor.Component
+@inject LobbyService LobbyService
+@inject PlayerService PlayerService
+@inject NavigationManager NavigationManager
+@implements IDisposable
+
+<style>
+    .disconnected {
+        text-decoration: line-through;
+    }
+</style>
+
+<Navbar/>
+@if (lobby != null)
+{
+    <h1>Connected to @lobby.Name as @us.Name</h1>
+    <button @onclick="LeaveLobby" class="btn btn-primary">Leave lobby</button>
+
+    <h3>Players (@lobby.Players.Count)</h3>
+    <ul>
+        @foreach (var player in lobby.Players)
+        {
+            <li>
+                <span class="@(player.IsConnected ? "" : "disconnected")">
+                    @player.Name
+                </span>
+                @if (player.IsModerator)
+                {
+                    <strong> M</strong>
+                }
+                @if (us.IsModerator && player != us)
+                {
+                    <button @onclick="@(() => lobby.KickPlayer(player))" class="btn btn-outline-danger">Kick</button>
+                    @if (!player.IsModerator) 
+                    {
+                        <button @onclick="@(() => lobby.MakeModerator(player))" class="btn btn-outline-info">Make moderator</button>
+                    }
+                }
+            </li>
+        }
+    </ul>
+    @if (us.IsModerator) {
+        <button class="btn btn-primary" @onclick="(() => startGame())">Start game</button>
+    }
+} else 
+{
+    <h1>
+        No lobby found
+    </h1>
+}
+
+
+@code
+{
+    [Parameter]
+    public string lobbyName{ get; set; }
+    private Player us;
+    private Lobby lobby;
+
+    public void LeaveLobby()
+    {
+        LobbyService.LeaveLobby(us, lobby);
+        NavigationManager.NavigateTo("/");
+    }
+
+    public async void OnLobbyUpdated()
+    {
+        await InvokeAsync(StateHasChanged);
+    }
+  
+
+    public async void OnPlayerRemoved(Player player)
+    {
+        if (player == us)
+        {
+            CleanupEvents();
+            player = null;
+            lobby = null;
+
+            await InvokeAsync(StateHasChanged);
+        }
+    }
+
+    public void startGame() {}
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        lobby = PlayerService.lobby;
+        us = PlayerService.us;
+        if (us != null && lobby != null)
+        {
+            lobby.OnLobbyUpdated += OnLobbyUpdated;
+            lobby.OnPlayerRemoved += OnPlayerRemoved;
+        }
+    }
+
+    public void CleanupEvents()
+    {
+        PlayerService.Clear();
+        lobby.OnLobbyUpdated -= OnLobbyUpdated;
+        lobby.OnPlayerRemoved -= OnPlayerRemoved;
+    }
+
+    public void Dispose()
+    {
+        if (lobby != null)
+        {
+            CleanupEvents();
+            lobby.DisconnectPlayer(us);
+        }
+    }
+}
