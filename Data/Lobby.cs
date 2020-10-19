@@ -8,10 +8,12 @@ namespace broken_picturephone_blazor.Data
     {
         public string Name { get; set; }
         public IList<Player> Players { get; set; }
+        public Game Game { get; set; }
 
         public event Action OnLobbyUpdated;
         public event Action<Player> OnPlayerRemoved;
         public event Action<Player> OnPlayerKicked;
+        public event Action OnGameStarted;
 
         public Lobby()
         {
@@ -20,6 +22,8 @@ namespace broken_picturephone_blazor.Data
             // Invoke OnLobbyUpdated for any more specific lobby update events
             OnPlayerRemoved += (_player) => OnLobbyUpdated?.Invoke();
         }
+
+        public void StartGame() => OnGameStarted?.Invoke();
 
         public bool HasConnectedPlayer(string name)
         {

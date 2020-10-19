@@ -44,7 +44,7 @@
         }
     </ul>
     @if (this.player.IsModerator) {
-        <button class="btn btn-primary" @onclick="(() => startGame())">Start game</button>
+        <button class="btn btn-primary" @onclick="(() => StartGame())">Start game</button>
     }
 }
 
@@ -63,10 +63,16 @@
             this.lobby.OnLobbyUpdated += OnLobbyUpdated;
             this.lobby.OnPlayerRemoved += OnPlayerRemoved;
             this.lobby.OnPlayerKicked += OnPlayerKicked;
+            this.lobby.OnGameStarted += OnGameStarted;
         } else
         {
             NavigationManager.NavigateTo("/");
         }
+    }
+
+    public void OnGameStarted()
+    {
+        NavigationManager.NavigateTo("/game");
     }
 
     public void LeaveLobby()
@@ -83,7 +89,7 @@
     {
         if (this.player == player)
         {
-            CleanupEvents();
+            Cleanup();
 
             this.player = null;
             this.lobby = null;
@@ -100,21 +106,28 @@
         }
     }
 
-    public void startGame() {}
+    public void StartGame()
+    {
+        // Create the game
 
-    public void CleanupEvents()
+        // Issue the event to move all players to the game
+        this.lobby.StartGame();
+    }
+
+    public void Cleanup()
     {
         PlayerService.Clear();
         this.lobby.OnLobbyUpdated -= OnLobbyUpdated;
         this.lobby.OnPlayerRemoved -= OnPlayerRemoved;
         this.lobby.OnPlayerKicked -= OnPlayerKicked;
+        this.lobby.OnGameStarted -= OnGameStarted;
     }
 
     public void Dispose()
     {
         if (this.lobby != null)
         {
-            CleanupEvents();
+            Cleanup();
 
             this.lobby.DisconnectPlayer(player);
         }
