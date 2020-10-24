@@ -1,17 +1,22 @@
 @page "/"
-
+@using broken_picturephone_blazor.Component
 @using broken_picturephone_blazor.Services
 @using broken_picturephone_blazor.Data
+@inject NavigationManager NavigationManager
 @inject LobbyService LobbyService
+@inject PlayerService PlayerService
 @implements IDisposable
 
-<style>
-    .disconnected {
-        text-decoration: line-through;
-    }
-</style>
-
-@if (lobby == null)
+<Navbar/>
+@if (lobby?.Game != null)
+{
+    <GameView Player=player Lobby=lobby/>
+}
+else if (lobby != null && player != null)
+{
+    <LobbyView Player=player Lobby=lobby/>
+}
+else
 {
     <div class="container">
         <div class="row">
@@ -34,50 +39,19 @@
         </div>
     </div>
 }
-else 
-{
-    <h1>Connected to @lobby.Name as @us.Name</h1>
-    <button @onclick="LeaveLobby" class="btn btn-primary">Leave lobby</button>
 
-    <h3>Players (@lobby.Players.Count)</h3>
-    <ul>
-        @foreach (var player in lobby.Players)
-        {
-            <li>
-                <span class="@(player.IsConnected ? "" : "disconnected")">
-                    @player.Name
-                </span>
-                @if (player.IsModerator)
-                {
-                    <strong> M</strong>
-                }
-                @if (us.IsModerator && player != us)
-                {
-                    <button @onclick="@(() => lobby.KickPlayer(player))" class="btn btn-outline-danger">Kick</button>
-                    @if (!player.IsModerator) 
-                    {
-                        <button @onclick="@(() => lobby.MakeModerator(player))" class="btn btn-outline-info">Make moderator</button>
-                    }
-                }
-            </li>
-        }
-    </ul>
-}
-
-
-@code
-{
+@code {
     private string playerName;
     private string lobbyName;
 
-    private Player us;
+    private Player player;
     private Lobby lobby;
 
     public void CreateOrJoinLobby()
     {
         try
         {
-            (lobby, us) = LobbyService.CreateOrJoinLobby(lobbyName, playerName);
+            (lobby, player) = LobbyService.CreateOrJoinLobby(this.lobbyName, this.playerName);
         }
         catch (PlayerExistsException)
         {
@@ -87,11 +61,8 @@ else
 
         lobby.OnLobbyUpdated += OnLobbyUpdated;
         lobby.OnPlayerRemoved += OnPlayerRemoved;
-    }
-
-    public void LeaveLobby()
-    {
-        LobbyService.LeaveLobby(us, lobby);
+        lobby.OnPlayerKicked += OnPlayerKicked;
+        lobby.OnGameStarted += OnGameStarted;
     }
 
     public async void OnLobbyUpdated()
@@ -99,30 +70,38 @@ else
         await InvokeAsync(StateHasChanged);
     }
 
-    public async void OnPlayerRemoved(Player player)
+    public void OnPlayerRemoved(Player player)
     {
-        if (player == us)
+        if (this.player == player)
         {
-            CleanupEvents();
-            player = null;
-            lobby = null;
+            lobby.OnLobbyUpdated -= OnLobbyUpdated;
+            lobby.OnPlayerRemoved -= OnPlayerRemoved;
+            lobby.OnPlayerKicked -= OnPlayerKicked;
+            lobby.OnGameStarted -= OnGameStarted;
 
-            await InvokeAsync(StateHasChanged);
+            this.player = null;
+            this.lobby = null;
         }
     }
 
-    public void CleanupEvents()
+    public void OnPlayerKicked(Player player)
     {
-        lobby.OnLobbyUpdated -= OnLobbyUpdated;
-        lobby.OnPlayerRemoved -= OnPlayerRemoved;
+        if (this.player == player)
+        {
+            // TODO: Show dialog
+        }
+    }
+
+    public async void OnGameStarted()
+    {
+        await InvokeAsync(StateHasChanged);
     }
 
     public void Dispose()
     {
-        if (lobby != null)
+        if (this.lobby != null && this.player != null)
         {
-            CleanupEvents();
-            lobby.DisconnectPlayer(us);
+            this.lobby.DisconnectPlayer(this.player);
         }
     }
 }

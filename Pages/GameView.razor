@@ -1,0 +1,59 @@
+@page "/game"
+
+@using broken_picturephone_blazor.Data
+@using broken_picturephone_blazor.Services
+@using broken_picturephone_blazor.Component
+@inject PlayerService PlayerService
+@inject LobbyService LobbyService
+@inject NavigationManager NavigationManager
+@implements IDisposable
+
+<div class="container">
+    <div class="row header">
+        <h1>Broken Picturephone</h1>
+    </div>
+    <div class="row">
+        <div class="col-md players">
+            <ul>
+            @foreach (var player in Lobby.Players)
+            {
+                <li>
+                    <span class="@(player.IsConnected ? "" : "disconnected")">
+                        @player.Name
+                    </span>
+                </li>
+            }
+            </ul>
+        </div>
+        <div class="col-md playfield">
+
+        </div>
+        <div class="col-md stuff">
+            
+        </div>
+    </div>
+</div>
+
+@code
+{
+    [Parameter]
+    public Player Player { get; set; }
+
+    [Parameter]
+    public Lobby Lobby { get; set; }
+     
+    private Game Game => Lobby.Game;
+
+
+    protected override void OnInitialized()
+    {
+    }
+
+    private void Cleanup()
+    {
+    }
+
+    public void Dispose()
+    {
+    }
+}

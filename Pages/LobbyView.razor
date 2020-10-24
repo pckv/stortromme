@@ -1,0 +1,89 @@
+@using broken_picturephone_blazor.Services
+@using broken_picturephone_blazor.Data
+@inject LobbyService LobbyService
+@inject PlayerService PlayerService
+@inject NavigationManager NavigationManager
+@implements IDisposable
+
+<style>
+    .disconnected {
+        text-decoration: line-through;
+    }
+</style>
+
+@if (Lobby != null)
+{
+    <h1>Connected to @Lobby.Name as @Player.Name</h1>
+    <button @onclick="LeaveLobby" class="btn btn-primary">Leave lobby</button>
+
+    <h3>Players (@Lobby.Players.Count)</h3>
+    <ul>
+        @foreach (var player in Lobby.Players)
+        {
+            <li>
+                <span class="@(player.IsConnected ? "" : "disconnected")">
+                    @player.Name
+                </span>
+                @if (player.IsModerator)
+                {
+                    <strong> M</strong>
+                }
+                @if (Player != player && Player.IsModerator)
+                {
+                    <button @onclick="@(() => Lobby.KickPlayer(player))" class="btn btn-outline-danger">Kick</button>
+                    @if (!player.IsModerator) 
+                    {
+                        <button @onclick="@(() => Lobby.MakeModerator(player))" class="btn btn-outline-info">Make moderator</button>
+                    }
+                }
+            </li>
+        }
+    </ul>
+    @if (Player.IsModerator) {
+        <button class="btn btn-primary" @onclick="StartGame">Start game</button>
+        //TODO: Have a way to change settings
+        <button class="btn btn-secondary" @onclick="(() => {Settings.Pages += 1; UpdateSettings();})">Change settings</button>
+    }
+    <h2>Pages: @Settings.Pages</h2>
+}
+
+@code
+{
+    [Parameter]
+    public Player Player { get; set; }
+
+    [Parameter]
+    public Lobby Lobby { get; set; }
+
+    public Settings Settings { get; set; }
+
+    protected override void OnInitialized()
+    {
+        Settings = Lobby.Settings;
+    }
+
+    public void LeaveLobby()
+    {
+        LobbyService.LeaveLobby(Player, Lobby);
+    }
+
+    public void UpdateSettings()
+    {
+        Lobby.UpdateSettings(Settings);
+    }
+
+    public void StartGame()
+    {
+        // Issue the event to move all players to the game
+        Lobby.StartGame(new Game 
+        { 
+            Settings = Settings,
+            Players = Lobby.Players,
+        });
+    }
+
+    public void Dispose()
+    {
+        // any disposables, e.g events
+    }
+}

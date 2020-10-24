@@ -19,7 +19,7 @@ namespace broken_picturephone_blazor.Services
             Lobby lobby = lobbies.FirstOrDefault(l => l.Name == lobbyName);
             if (lobby == null)
             {
-                lobby = new Lobby { Name = lobbyName };
+                lobby = new Lobby { Name = lobbyName, Settings = new Settings() };
                 lobbies.Add(lobby);
             }
 
