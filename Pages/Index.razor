@@ -7,45 +7,97 @@
 @inject PlayerService PlayerService
 
 <Navbar/>
-<div class="container">
-    <div class="row">
-        <div class="col-sm-3">
-            <h4>Name: </h4>
-            <input @bind="this.playerName" class="form-control" placeholder="name">
+@if (lobby != null && player != null)
+{
+    <LobbyView Player=player Lobby=lobby/>
+}
+else
+{
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-3">
+                <h4>Name: </h4>
+                <input @bind="this.playerName" class="form-control" placeholder="name">
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-3">
+                <h4>Lobby name:</h4>
+                <input @bind="this.lobbyName" class="form-control" placeholder="lobby name">
+            </div>
+        </div>
+        <div class="divider"></div>
+        <div class="row">
+            <div class="col-sm-3">
+                <button @onclick="CreateOrJoinLobby" class="btn btn-primary">Join or create lobby</button>
+            </div>
         </div>
     </div>
-    <div class="row">
-        <div class="col-sm-3">
-            <h4>Lobby name:</h4>
-            <input @bind="this.lobbyName" class="form-control" placeholder="lobby name">
-        </div>
-    </div>
-    <div class="divider"></div>
-    <div class="row">
-        <div class="col-sm-3">
-            <button @onclick="CreateOrJoinLobby" class="btn btn-primary">Join or create lobby</button>
-        </div>
-    </div>
-</div>
-
+}
 
 @code {
     private string playerName;
     private string lobbyName;
 
+    private Player player;
+    private Lobby lobby;
+
     public void CreateOrJoinLobby()
     {
         try
         {
-            var (lobby, player) = LobbyService.CreateOrJoinLobby(this.lobbyName, this.playerName);
-            
-            PlayerService.Lobby = lobby;
-            PlayerService.Player = player;
-            NavigationManager.NavigateTo("/lobby");
+            (lobby, player) = LobbyService.CreateOrJoinLobby(this.lobbyName, this.playerName);
         }
         catch (PlayerExistsException)
         {
             // TODO: display error
         }
+
+        SubscribeEvents();
+    }
+
+    public async void OnLobbyUpdated()
+    {
+        await InvokeAsync(StateHasChanged);
+    }
+
+    public void OnPlayerRemoved(Player player)
+    {
+        if (this.player == player)
+        {
+            UnsubscribeEvents();
+
+            this.player = null;
+            this.lobby = null;
+        }
+    }
+
+    public void OnPlayerKicked(Player player)
+    {
+        if (this.player == player)
+        {
+            // TODO: Show dialog
+        }
+    }
+
+    public void OnGameStarted()
+    {
+        // start game
+    }
+
+    public void SubscribeEvents()
+    {
+        lobby.OnLobbyUpdated += OnLobbyUpdated;
+        lobby.OnPlayerRemoved += OnPlayerRemoved;
+        lobby.OnPlayerKicked += OnPlayerKicked;
+        lobby.OnGameStarted += OnGameStarted;
+    }
+
+    public void UnsubscribeEvents()
+    {
+        lobby.OnLobbyUpdated -= OnLobbyUpdated;
+        lobby.OnPlayerRemoved -= OnPlayerRemoved;
+        lobby.OnPlayerKicked -= OnPlayerKicked;
+        lobby.OnGameStarted -= OnGameStarted;
     }
 }
