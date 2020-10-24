@@ -40,7 +40,7 @@
         }
     </ul>
     @if (Player.IsModerator) {
-        <button class="btn btn-primary" @onclick="(() => StartGame())">Start game</button>
+        <button class="btn btn-primary" @onclick="StartGame">Start game</button>
         //TODO: Have a way to change settings
         <button class="btn btn-secondary" @onclick="(() => {Settings.Pages += 1; UpdateSettings();})">Change settings</button>
     }
@@ -74,11 +74,8 @@
 
     public void StartGame()
     {
-        // Create the game
-        Lobby.CreateGame(Settings);
-
         // Issue the event to move all players to the game
-        Lobby.StartGame();
+        Lobby.StartGame(new Game { Lobby = Lobby });
     }
 
     public void Dispose()

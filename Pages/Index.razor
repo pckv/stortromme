@@ -7,7 +7,11 @@
 @inject PlayerService PlayerService
 
 <Navbar/>
-@if (lobby != null && player != null)
+@if (game != null)
+{
+    <GameView Game=game/>
+}
+else if (lobby != null && player != null)
 {
     <LobbyView Player=player Lobby=lobby/>
 }
@@ -17,13 +21,13 @@ else
         <div class="row">
             <div class="col-sm-3">
                 <h4>Name: </h4>
-                <input @bind="this.playerName" class="form-control" placeholder="name">
+                <input @bind="playerName" class="form-control" placeholder="name">
             </div>
         </div>
         <div class="row">
             <div class="col-sm-3">
                 <h4>Lobby name:</h4>
-                <input @bind="this.lobbyName" class="form-control" placeholder="lobby name">
+                <input @bind="lobbyName" class="form-control" placeholder="lobby name">
             </div>
         </div>
         <div class="divider"></div>
@@ -41,19 +45,23 @@ else
 
     private Player player;
     private Lobby lobby;
+    private Game game;
 
     public void CreateOrJoinLobby()
     {
         try
         {
-            (lobby, player) = LobbyService.CreateOrJoinLobby(this.lobbyName, this.playerName);
+            (this.lobby, this.player) = LobbyService.CreateOrJoinLobby(this.lobbyName, this.playerName);
         }
         catch (PlayerExistsException)
         {
             // TODO: display error
         }
 
-        SubscribeEvents();
+        lobby.OnLobbyUpdated += OnLobbyUpdated;
+        lobby.OnPlayerRemoved += OnPlayerRemoved;
+        lobby.OnPlayerKicked += OnPlayerKicked;
+        lobby.OnGameStarted += OnGameStarted;
     }
 
     public async void OnLobbyUpdated()
@@ -65,7 +73,10 @@ else
     {
         if (this.player == player)
         {
-            UnsubscribeEvents();
+            lobby.OnLobbyUpdated -= OnLobbyUpdated;
+            lobby.OnPlayerRemoved -= OnPlayerRemoved;
+            lobby.OnPlayerKicked -= OnPlayerKicked;
+            lobby.OnGameStarted -= OnGameStarted;
 
             this.player = null;
             this.lobby = null;
@@ -80,24 +91,16 @@ else
         }
     }
 
-    public void OnGameStarted()
+    public async void OnGameStarted(Game game)
     {
-        // start game
+        this.game = game;
+        this.game.OnGameEnded += OnGameEnded;
+        await InvokeAsync(StateHasChanged);
     }
 
-    public void SubscribeEvents()
+    public void OnGameEnded()
     {
-        lobby.OnLobbyUpdated += OnLobbyUpdated;
-        lobby.OnPlayerRemoved += OnPlayerRemoved;
-        lobby.OnPlayerKicked += OnPlayerKicked;
-        lobby.OnGameStarted += OnGameStarted;
-    }
-
-    public void UnsubscribeEvents()
-    {
-        lobby.OnLobbyUpdated -= OnLobbyUpdated;
-        lobby.OnPlayerRemoved -= OnPlayerRemoved;
-        lobby.OnPlayerKicked -= OnPlayerKicked;
-        lobby.OnGameStarted -= OnGameStarted;
+        this.game.OnGameEnded -= OnGameEnded;
+        this.game = null;
     }
 }
