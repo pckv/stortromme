@@ -21,7 +21,6 @@ namespace broken_picturephone_blazor.Data
 
             // Invoke OnLobbyUpdated for any more specific lobby update events
             OnPlayerRemoved += (_player) => OnLobbyUpdated?.Invoke();
-            OnGameStarted += (_game) => OnLobbyUpdated?.Invoke();
         }
 
         public void StartGame(Game game) => OnGameStarted?.Invoke(game);

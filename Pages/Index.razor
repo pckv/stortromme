@@ -5,6 +5,7 @@
 @inject NavigationManager NavigationManager
 @inject LobbyService LobbyService
 @inject PlayerService PlayerService
+@implements IDisposable
 
 <Navbar/>
 @if (game != null)
@@ -51,11 +52,12 @@ else
     {
         try
         {
-            (this.lobby, this.player) = LobbyService.CreateOrJoinLobby(this.lobbyName, this.playerName);
+            (lobby, player) = LobbyService.CreateOrJoinLobby(this.lobbyName, this.playerName);
         }
         catch (PlayerExistsException)
         {
             // TODO: display error
+            return;
         }
 
         lobby.OnLobbyUpdated += OnLobbyUpdated;
@@ -102,5 +104,13 @@ else
     {
         this.game.OnGameEnded -= OnGameEnded;
         this.game = null;
+    }
+
+    public void Dispose()
+    {
+        if (this.lobby != null && this.player != null)
+        {
+            this.lobby.DisconnectPlayer(this.player);
+        }
     }
 }
