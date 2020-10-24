@@ -15,7 +15,7 @@
     <div class="row">
         <div class="col-md players">
             <ul>
-            @foreach (var player in lobby.Players)
+            @foreach (var player in Lobby.Players)
             {
                 <li>
                     <span class="@(player.IsConnected ? "" : "disconnected")">
@@ -40,9 +40,9 @@
     public Player Player { get; set; }
 
     [Parameter]
-    public Game Game { get; set; }
+    public Lobby Lobby { get; set; }
      
-    private Lobby lobby => Game.Lobby;
+    private Game Game => Lobby.Game;
 
 
     protected override void OnInitialized()

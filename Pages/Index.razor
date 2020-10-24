@@ -8,9 +8,9 @@
 @implements IDisposable
 
 <Navbar/>
-@if (game != null)
+@if (lobby?.Game != null)
 {
-    <GameView Game=game/>
+    <GameView Player=player Lobby=lobby/>
 }
 else if (lobby != null && player != null)
 {
@@ -46,7 +46,6 @@ else
 
     private Player player;
     private Lobby lobby;
-    private Game game;
 
     public void CreateOrJoinLobby()
     {
@@ -93,17 +92,9 @@ else
         }
     }
 
-    public async void OnGameStarted(Game game)
+    public async void OnGameStarted()
     {
-        this.game = game;
-        this.game.OnGameEnded += OnGameEnded;
         await InvokeAsync(StateHasChanged);
-    }
-
-    public void OnGameEnded()
-    {
-        this.game.OnGameEnded -= OnGameEnded;
-        this.game = null;
     }
 
     public void Dispose()
