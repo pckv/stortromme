@@ -24,9 +24,13 @@ namespace broken_picturephone_blazor.Data
             OnPlayerRemoved += (_player) => OnLobbyUpdated?.Invoke();
         }
 
-        public void StartGame(Game game)
+        public void StartGame()
         {
-            Game = game;
+            Game = new Game 
+            { 
+                Settings = Settings,
+                Players = Players,
+            };
             OnGameStarted?.Invoke();
         }
 

@@ -1,0 +1,13 @@
+@using broken_picturephone_blazor.Data
+
+@if (Page.ContentType == ContentType.Text)
+{
+    <span>Prompt: </span>
+    <input @bind="Page.Content" class="form-control" placeholder="Enter anything">
+}
+
+@code
+{
+    [Parameter]
+    public Page Page { get; set; }
+}

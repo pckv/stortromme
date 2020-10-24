@@ -75,11 +75,7 @@
     public void StartGame()
     {
         // Issue the event to move all players to the game
-        Lobby.StartGame(new Game 
-        { 
-            Settings = Settings,
-            Players = Lobby.Players,
-        });
+        Lobby.StartGame();
     }
 
     public void Dispose()
