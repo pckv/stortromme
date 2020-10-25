@@ -1,0 +1,30 @@
+@using broken_picturephone_blazor.Data
+@using broken_picturephone_blazor.Component
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-8">
+            @foreach (var book in books)
+            {
+                <h1>@(book.Master.Name)'s book</h1>
+                @foreach (var page in book.Pages)
+                {
+                    <h2>Page @(page.PageNumber + 1)</h2>
+                    <PageViewer Page=page></PageViewer>
+                }
+            }
+        </div>
+    </div>
+</div>
+
+@code
+{
+    [Parameter]
+    public Player Player { get; set; }
+
+    [Parameter]
+    public Lobby Lobby { get; set; }
+     
+    private Game game => Lobby.Game;
+    private IList<Book> books => game.Books;
+}

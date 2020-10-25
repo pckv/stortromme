@@ -101,6 +101,7 @@ namespace broken_picturephone_blazor.Data
                 {
                     Author = book.Master,
                     ContentType = GetCurrentPageType(),
+                    PageNumber = CurrentPage,
                 });
 
                 Books.Add(book);
@@ -119,6 +120,7 @@ namespace broken_picturephone_blazor.Data
                 {
                     Author = player,
                     ContentType = GetCurrentPageType(),
+                    PageNumber = CurrentPage,
                 });
             }
         }
