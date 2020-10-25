@@ -1,6 +1,6 @@
 <div class="container">
     <p class="message">
-        @ErrorMessage
+        @Message
     </p>
     <button class="btn btn-primary" @onclick="OnClosed"> Close </button>
 </div>
@@ -8,7 +8,7 @@
 @code
 {
     [Parameter]
-    public string ErrorMessage { get; set; }
+    public string Message { get; set; }
 
     [Parameter]
     public EventCallback OnClosed { get; set; }
