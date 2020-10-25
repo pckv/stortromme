@@ -23,6 +23,12 @@ namespace broken_picturephone_blazor.Services
                 lobbies.Add(lobby);
             }
 
+            // Throw if a game is in progress
+            if (lobby.Game != null)
+            {
+                throw new GameInProgressException();
+            }
+
             // Throw when a connected player with the same name is already in
             // the lobby
             if (lobby.HasConnectedPlayer(playerName))

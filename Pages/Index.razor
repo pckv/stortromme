@@ -58,6 +58,11 @@ else
             // TODO: display error
             return;
         }
+        catch (GameInProgressException)
+        {
+            // TODO: display error
+            return;
+        }
 
         lobby.OnLobbyUpdated += OnLobbyUpdated;
         lobby.OnPlayerRemoved += OnPlayerRemoved;
