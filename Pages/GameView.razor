@@ -29,6 +29,10 @@
                 <PageEditor Page=page/>
                 <button @onclick="SubmitPage" class="btn btn-primary">Submit</button>
             }
+            @if (previousPage != null)
+            {
+                <PageViewer Page=previousPage/>
+            }
         </div>
         <div class="col-md stuff">
             
@@ -50,6 +54,7 @@
 
     // TODO: optimization if the page is cloned and worked on locally
     private Page page => book?.Pages[game.CurrentPage];
+    private Page previousPage => game.CurrentPage > 0 ? book?.Pages[game.CurrentPage - 1] : null;
     
     protected override void OnInitialized()
     {

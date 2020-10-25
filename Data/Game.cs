@@ -50,7 +50,6 @@ namespace broken_picturephone_blazor.Data
         public void NextPage()
         {
             CurrentPage++;
-
             if (CurrentPage == 0)
             {
                 CreateBooks();

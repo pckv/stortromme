@@ -1,0 +1,12 @@
+@using broken_picturephone_blazor.Data
+
+@if (Page.ContentType == ContentType.Text)
+{
+    <p>@Page.Content</p>
+}
+
+@code
+{
+    [Parameter]
+    public Page Page { get; set; }
+}
