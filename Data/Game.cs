@@ -13,7 +13,7 @@ namespace broken_picturephone_blazor.Data
         public IList<Player> ReadyPlayers { get; set; }
 
         public event Action OnNextPage;
-        public event Action OnGameOver;
+        public event Action OnGameEnded;
 
         public Game()
         {
@@ -41,7 +41,7 @@ namespace broken_picturephone_blazor.Data
             }
         }
 
-        public bool IsGameOver() => CurrentPage > Settings.Pages;
+        public bool HasGameEnded() => CurrentPage >= Settings.Pages;
 
         public Book GetCurrentBook(Player player)
         {
@@ -52,21 +52,23 @@ namespace broken_picturephone_blazor.Data
         {
             CurrentPage++;
 
-            if (IsGameOver())
+            if (HasGameEnded())
             {
-
-            }
-
-            if (CurrentPage == 0)
-            {
-                CreateBooks();
+                OnGameEnded?.Invoke();
             }
             else
             {
-                CreateNewPages();
-            }
+                if (CurrentPage == 0)
+                {
+                    CreateBooks();
+                }
+                else
+                {
+                    CreateNewPages();
+                }
 
-            OnNextPage?.Invoke();
+                OnNextPage?.Invoke();
+            }
         }
 
         private bool AreAllPagesSubmitted()

@@ -18,8 +18,9 @@
     {
         <GameView Player=player Lobby=lobby></GameView>
     }
-    else if (lobby.Game.IsGameOver() == true)
+    else if (lobby.Game.HasGameEnded() == true)
     {
+        <h3>GAME OVER FUCKER</h3>
         @* <PresentView Player=player Lobby=lobby></PresentView> *@
     }
 }
@@ -46,6 +47,10 @@ else
         </div>
     </div>
 }
+@if (!string.IsNullOrEmpty(errorMessage))
+{
+    <ErrorDialog ErrorMessage=errorMessage OnClosed=OnErrorDialogClosed></ErrorDialog>
+}
 
 @code {
     private string playerName;
@@ -53,6 +58,13 @@ else
 
     private Player player;
     private Lobby lobby;
+
+    private string errorMessage;
+
+    public void OnErrorDialogClosed()
+    {
+        errorMessage = string.Empty;
+    }
 
     public void CreateOrJoinLobby()
     {
@@ -63,6 +75,7 @@ else
         catch (PlayerExistsException)
         {
             // TODO: display error
+            errorMessage = "Player exists";
             return;
         }
         catch (GameInProgressException)
@@ -106,6 +119,14 @@ else
 
     public async void OnGameStarted()
     {
+        lobby.Game.OnGameEnded += OnGameEnded;
+        await InvokeAsync(StateHasChanged);
+    }
+
+    public async void OnGameEnded()
+    {
+        Console.WriteLine("game ended fucker");
+        lobby.Game.OnGameEnded -= OnGameEnded;
         await InvokeAsync(StateHasChanged);
     }
 
