@@ -9,7 +9,7 @@
                 <h1>@(book.Master.Name)'s book</h1>
                 @foreach (var page in book.Pages)
                 {
-                    <h2>Page @(page.PageNumber + 1)</h2>
+                    <h2>Page @(page.PageNumber + 1) (@(page.Author.Name))</h2>
                     <PageViewer Page=page></PageViewer>
                 }
             }
