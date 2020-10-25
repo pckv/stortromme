@@ -27,9 +27,9 @@
             @if (page != null)
             {
                 <PageEditor Page=page/>
+                <button @onclick="SubmitPage" class="btn btn-primary">Submit</button>
             }
         </div>
-        <button @onclick="GivePage">Give page</button>
         <div class="col-md stuff">
             
         </div>
@@ -46,30 +46,42 @@
      
     private Game game => Lobby.Game;
 
-    private Page page;
+    private Book book;
+
+    // TODO: optimization if the page is cloned and worked on locally
+    private Page page => book?.Pages[game.CurrentPage];
     
     protected override void OnInitialized()
     {
-        game.OnNewPage += OnNewPage;
+        game.OnNextPage += OnNextPage;
+
+        // In case of reconnection, look for a page in progress
+        var currentBook = game.GetCurrentBook(Player);
+        if (currentBook == null)
+        {
+            game.PlayerReady(Player);
+        }
+        else if (currentBook.Pages[game.CurrentPage].InProgress)
+        {
+            book = currentBook;
+        }
     }
 
-    public async void OnNewPage(ContentType contentType)
+    public async void OnNextPage()
     {
-        this.page = new Page
-        {
-            Author = Player,
-            ContentType = contentType,
-        };
+        book = game.GetCurrentBook(Player);
         await InvokeAsync(StateHasChanged);
     }
 
-    public void GivePage()
+    public void SubmitPage()
     {
-        game.FirstPages();
+        var submitBook = book;
+        book = null;
+        game.SubmitPage(submitBook);
     }
 
     public void Dispose()
     {
-        game.OnNewPage -= OnNewPage;
+        game.OnNextPage -= OnNextPage;
     }
 }
