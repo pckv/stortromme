@@ -44,6 +44,14 @@ namespace broken_picturephone_blazor.Data
             // Assign to existing player or create a new one. This is presumed 
             // no connected player is already in the lobby with the same name.
             Player player = Players.FirstOrDefault(p => p.IsNameEqual(name));
+
+            // Only allow joining if the game is not in progress, or this player
+            // is reconnecting
+            if (Game != null && player?.IsConnected == true)
+            {
+                throw new GameInProgressException();
+            }
+
             if (player == null)
             {
                 player = new Player { 
@@ -52,7 +60,7 @@ namespace broken_picturephone_blazor.Data
                 };
                 Players.Add(player);
             }
-                        
+            
             player.IsConnected = true;
 
             OnLobbyUpdated?.Invoke();

@@ -1,5 +1,6 @@
 @using broken_picturephone_blazor.Services
 @using broken_picturephone_blazor.Data
+@using broken_picturephone_blazor.Component
 @inject LobbyService LobbyService
 @inject PlayerService PlayerService
 @inject NavigationManager NavigationManager
@@ -21,13 +22,7 @@
         @foreach (var player in Lobby.Players)
         {
             <li>
-                <span class="@(player.IsConnected ? "" : "disconnected")">
-                    @player.Name
-                </span>
-                @if (player.IsModerator)
-                {
-                    <strong> M</strong>
-                }
+                <PlayerListItem Player=player/>
                 @if (Player != player && Player.IsModerator)
                 {
                     <button @onclick="@(() => Lobby.KickPlayer(player))" class="btn btn-outline-danger">Kick</button>

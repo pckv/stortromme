@@ -13,6 +13,7 @@ namespace broken_picturephone_blazor.Data
         public IList<Player> ReadyPlayers { get; set; }
 
         public event Action OnNextPage;
+        public event Action OnGameOver;
 
         public Game()
         {
@@ -40,7 +41,7 @@ namespace broken_picturephone_blazor.Data
             }
         }
 
-        public bool IsGameOver() => CurrentPage >= Settings.Pages;
+        public bool IsGameOver() => CurrentPage > Settings.Pages;
 
         public Book GetCurrentBook(Player player)
         {
@@ -50,6 +51,12 @@ namespace broken_picturephone_blazor.Data
         public void NextPage()
         {
             CurrentPage++;
+
+            if (IsGameOver())
+            {
+
+            }
+
             if (CurrentPage == 0)
             {
                 CreateBooks();

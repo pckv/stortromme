@@ -8,13 +8,20 @@
 @implements IDisposable
 
 <Navbar/>
-@if (lobby?.Game != null)
+@if (player != null)
 {
-    <GameView Player=player Lobby=lobby/>
-}
-else if (lobby != null && player != null)
-{
-    <LobbyView Player=player Lobby=lobby/>
+    if (lobby != null)
+    {
+        <LobbyView Player=player Lobby=lobby></LobbyView>
+    }
+    else if (lobby.Game != null)
+    {
+        <GameView Player=player Lobby=lobby></GameView>
+    }
+    else if (lobby.Game.IsGameOver() == true)
+    {
+        @* <PresentView Player=player Lobby=lobby></PresentView> *@
+    }
 }
 else
 {

@@ -1,0 +1,15 @@
+@using broken_picturephone_blazor.Data
+
+<span class="@(Player.IsConnected ? "" : "disconnected")">
+        @Player.Name
+</span>
+@if (Player.IsModerator)
+{
+    <strong> M</strong>
+}
+
+@code 
+{
+    [Parameter]
+    public Player Player { get; set; }
+}
