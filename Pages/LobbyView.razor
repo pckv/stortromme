@@ -34,12 +34,15 @@
             </li>
         }
     </ul>
+
+    <div>
+        <label for="pages">Pages</label>
+        <input id="pages" type="number" @bind="settings.Pages" title="Pages" disabled=@(!Player.IsModerator)>
+    </div>
     @if (Player.IsModerator) {
         <button class="btn btn-primary" @onclick="StartGame">Start game</button>
-        //TODO: Have a way to change settings
-        <button class="btn btn-secondary" @onclick="(() => {Settings.Pages += 1; UpdateSettings();})">Change settings</button>
+        
     }
-    <h2>Pages: @Settings.Pages</h2>
 }
 
 @code
@@ -50,11 +53,11 @@
     [Parameter]
     public Lobby Lobby { get; set; }
 
-    public Settings Settings { get; set; }
+    private Settings settings => Lobby.Settings;
 
     protected override void OnInitialized()
     {
-        Settings = Lobby.Settings;
+        settings.OnSettingsUpdated += OnSettingsUpdated;
     }
 
     public void LeaveLobby()
@@ -62,9 +65,9 @@
         LobbyService.LeaveLobby(Player, Lobby);
     }
 
-    public void UpdateSettings()
+    public async void OnSettingsUpdated()
     {
-        Lobby.UpdateSettings(Settings);
+        await InvokeAsync(StateHasChanged);
     }
 
     public void StartGame()
@@ -75,6 +78,6 @@
 
     public void Dispose()
     {
-        // any disposables, e.g events
+        settings.OnSettingsUpdated -= OnSettingsUpdated;
     }
 }

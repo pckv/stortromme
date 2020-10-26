@@ -39,6 +39,14 @@ namespace broken_picturephone_blazor.Data
             return Players.Any(p => p.IsNameEqual(name) && p.IsConnected);
         }
 
+        private void UpdatePages()
+        {
+            if (Settings.ShouldUpdatePagesDymanically)
+            {
+                Settings.UpdateDynamicPages(Players.Count);
+            }
+        }
+
         public Player AddPlayer(string name)
         {
             // Assign to existing player or create a new one. This is presumed 
@@ -60,6 +68,8 @@ namespace broken_picturephone_blazor.Data
                 };
                 Players.Add(player);
             }
+
+            UpdatePages();
             
             player.IsConnected = true;
 
@@ -72,12 +82,15 @@ namespace broken_picturephone_blazor.Data
             Players.Remove(player);
             OnPlayerRemoved?.Invoke(player);
 
+            UpdatePages();
+
             // Assign the first player as moderator if all moderators were removed
             if (Players.Count > 0 && Players.All(p => !p.IsModerator))
             {
                 Players.First().IsModerator = true;
-                OnLobbyUpdated?.Invoke();
             }
+
+            OnLobbyUpdated?.Invoke();
         }
 
         public void KickPlayer(Player player)
