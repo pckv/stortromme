@@ -15,34 +15,39 @@
 @if (Lobby != null)
 {
     <h1>Connected to @Lobby.Name as @Player.Name</h1>
-    <button @onclick="LeaveLobby" class="btn btn-primary">Leave lobby</button>
-
-    <h3>Players (@Lobby.Players.Count)</h3>
-    <ul>
-        @foreach (var player in Lobby.Players)
-        {
-            <li>
-                <PlayerListItem Player=player/>
-                @if (Player != player && Player.IsModerator)
-                {
-                    <button @onclick="@(() => Lobby.KickPlayer(player))" class="btn btn-outline-danger">Kick</button>
-                    @if (!player.IsModerator) 
+    <div class="container">
+        <div class="row">
+            <div class="col-md">
+                <h3>Players (@Lobby.Players.Count)</h3>
+                <ul>
+                    @foreach (var player in Lobby.Players)
                     {
-                        <button @onclick="@(() => Lobby.MakeModerator(player))" class="btn btn-outline-info">Make moderator</button>
+                        <li>
+                            <PlayerListItem Player=player></PlayerListItem>
+                            @if (Player != player && Player.IsModerator)
+                            {
+                                <button @onclick="@(() => Lobby.KickPlayer(player))" class="btn btn-outline-danger">Kick</button>
+                                @if (!player.IsModerator) 
+                                {
+                                    <button @onclick="@(() => Lobby.MakeModerator(player))" class="btn btn-outline-info">Make moderator</button>
+                                }
+                            }
+                        </li>
                     }
-                }
-            </li>
-        }
-    </ul>
+                </ul>
+                <button @onclick="LeaveLobby" class="btn btn-primary">Leave lobby</button>
+            </div>
 
-    <div>
-        <label for="pages">Pages</label>
-        <input id="pages" type="number" @bind="settings.Pages" title="Pages" disabled=@(!Player.IsModerator)>
+            <div class="col-md">
+                <h3>Game settings</h3>
+                <div>
+                    <label for="pages">Pages</label>
+                    <input id="pages" type="number" @bind="settings.Pages" title="Pages" disabled=@(!Player.IsModerator)>
+                </div>
+                <button class="btn btn-primary" @onclick="StartGame" disabled=@(!Player.IsModerator)>Start game</button>
+            </div>
+        </div>
     </div>
-    @if (Player.IsModerator) {
-        <button class="btn btn-primary" @onclick="StartGame">Start game</button>
-        
-    }
 }
 
 @code
