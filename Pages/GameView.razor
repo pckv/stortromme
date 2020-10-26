@@ -13,29 +13,27 @@
     <div class="row">
         <div class="col-md players">
             <ul>
-            @foreach (var player in Lobby.Players)
-            {
-                <li>
-                    <span class="@(player.IsConnected ? "" : "disconnected")">
-                        @player.Name
-                    </span>
-                </li>
-            }
+                @foreach (var player in Lobby.Players)
+                {
+                    <li>
+                        <PlayerListItem Player=player></PlayerListItem>
+                    </li>
+                }
             </ul>
         </div>
         <div class="col-md playfield">
+            @if (previousPage != null)
+            {
+                <p><PageViewer Page=previousPage/></p>
+            }
             @if (page != null)
             {
                 <PageEditor Page=page/>
                 <button @onclick="SubmitPage" class="btn btn-primary">Submit</button>
             }
-            @if (previousPage != null)
-            {
-                <PageViewer Page=previousPage/>
-            }
         </div>
         <div class="col-md stuff">
-            
+            <h3>Page @(game.CurrentPage + 1)/@game.Settings.Pages</h3>
         </div>
     </div>
 </div>

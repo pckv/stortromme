@@ -90,6 +90,16 @@ namespace broken_picturephone_blazor.Data
                 : Settings.PageTypePattern[(CurrentPage - 1) % Settings.PageTypePattern.Count];
         }
 
+        private void AddNewPage(Book book, Player author)
+        {
+            book.Pages.Add(new Page
+            {
+                Author = author,
+                ContentType = GetCurrentPageType(),
+                PageNumber = CurrentPage,
+            });
+        }
+
         private void CreateBooks()
         {
             foreach (var player in Players)
@@ -97,31 +107,37 @@ namespace broken_picturephone_blazor.Data
                 var book = new Book { Master = player };
 
                 // Add the first page by the Master
-                book.Pages.Add(new Page
-                {
-                    Author = book.Master,
-                    ContentType = GetCurrentPageType(),
-                    PageNumber = CurrentPage,
-                });
+                AddNewPage(book, author: player);
 
                 Books.Add(book);
             }
         }
 
+        private Player GetAuthorForBook(Book book, IList<Player> assignedPlayers)
+        {
+            var previousAuthors = book.Pages
+                .Reverse()
+                .Take(Players.Count - 1)
+                .Select(p => p.Author)
+                .ToList();
+
+            return Players
+                .Where(p => !previousAuthors.Contains(p) && !assignedPlayers.Contains(p))
+                .OrderBy(p => Guid.NewGuid())
+                .FirstOrDefault();
+        }
+
         private void CreateNewPages()
         {
-            // TODO: assign to random player using cool algorithm hehe
-            var randomPlayers = Players.OrderBy(p => Guid.NewGuid()).ToList();
+            var assignedPlayers = new List<Player>();
 
             // Create a new page for each book
-            foreach (var (player, book) in randomPlayers.Zip(Books))
+            foreach (var book in Books)
             {
-                book.Pages.Add(new Page
-                {
-                    Author = player,
-                    ContentType = GetCurrentPageType(),
-                    PageNumber = CurrentPage,
-                });
+                var author = GetAuthorForBook(book, assignedPlayers);
+                assignedPlayers.Add(author);;
+
+                AddNewPage(book, author);
             }
         }
     }

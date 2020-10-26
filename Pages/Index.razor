@@ -73,7 +73,7 @@ else
         }
         catch (PlayerExistsException)
         {
-            errorMessage = $"Player {playerName} already exists";
+            errorMessage = $"The name {playerName} is taken";
             return;
         }
         catch (GameInProgressException)
@@ -111,7 +111,6 @@ else
     {
         if (this.player == player)
         {
-            // TODO: Show dialog
             errorMessage = "You got kicked from the lobby";
         }
     }
