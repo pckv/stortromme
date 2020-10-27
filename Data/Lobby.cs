@@ -55,7 +55,7 @@ namespace broken_picturephone_blazor.Data
 
             // Only allow joining if the game is not in progress, or this player
             // is reconnecting
-            if (Game != null && player?.IsConnected == true)
+            if ((player == null || player.IsConnected) && Game != null)
             {
                 throw new GameInProgressException();
             }
