@@ -12,7 +12,7 @@ namespace broken_picturephone_blazor.Data
         public int CurrentPage { get; set; }
         public IList<Player> ReadyPlayers { get; set; }
 
-        private IList<Player> shuffledPlayers;
+        private IList<IList<Player>> playerPattern;
 
         public event Action OnNextPage;
         public event Action OnGameEnded;
@@ -102,13 +102,32 @@ namespace broken_picturephone_blazor.Data
             });
         }
 
+        private void createPlayerPattern()
+        {
+            // Create a shifted list per player
+            playerPattern = Enumerable.Range(0, Players.Count)
+                .Select(i => (IList<Player>) Players.Skip(i).Concat(Players.Take(i)).ToList())
+                .ToList();
+            
+            // Shuffle the list of patterns
+            playerPattern = playerPattern.OrderBy(l => Guid.NewGuid()).ToList();
+
+            // Transpose the player patterns to allow for previous page to be
+            // by an unpredicted player
+            playerPattern = Enumerable.Range(0, Players.Count)
+                .Select(i => (IList<Player>) playerPattern.Select(l => l[i]).ToList())
+                .ToList();
+
+            // And finally shuffle the new list to enable the statement above
+            playerPattern = playerPattern.OrderBy(l => Guid.NewGuid()).ToList();
+        }
+
         private void CreateBooks()
         {
-            // Shuffle players so that assigned books are unpredictable
-            shuffledPlayers = Players.OrderBy(p => Guid.NewGuid()).ToList();
+            createPlayerPattern();
 
             // Create the first page of every book
-            foreach (var player in shuffledPlayers)
+            foreach (var player in playerPattern[CurrentPage])
             {
                 var book = new Book { Master = player };
 
@@ -121,13 +140,10 @@ namespace broken_picturephone_blazor.Data
 
         private void CreateNewPages()
         {
-            // Shift assignees right by one
-            shuffledPlayers = shuffledPlayers.Skip(1).Concat(shuffledPlayers.Take(1)).ToList();
-
             // Create a new page for each book
             for (var i = 0; i < Books.Count; i++)
             {
-                AddNewPage(Books[i], shuffledPlayers[i]);
+                AddNewPage(Books[i], playerPattern[CurrentPage % Players.Count][i]);
             }
         }
     }
