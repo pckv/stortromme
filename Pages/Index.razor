@@ -1,5 +1,5 @@
 @page "/"
-@page "/{lobbyName}"
+@page "/lobby/{lobbyName}"
 @using broken_picturephone_blazor.Component
 @using broken_picturephone_blazor.Services
 @using broken_picturephone_blazor.Data
@@ -28,14 +28,14 @@ else
     <div class="container">
         <div class="row">
             <div class="col-sm-3">
-                <h4>Name: </h4>
-                <input @bind="PlayerName" class="form-control" placeholder="name">
+                <h4>Lobby name:</h4>
+                <input @bind="LobbyName" class="form-control" placeholder="lobby name" disabled=@WasInvite>
             </div>
         </div>
         <div class="row">
             <div class="col-sm-3">
-                <h4>Lobby name:</h4>
-                <input @bind="LobbyName" class="form-control" placeholder="lobby name">
+                <h4>Name: </h4>
+                <input @bind="PlayerName" class="form-control" placeholder="name">
             </div>
         </div>
         <div class="divider"></div>
@@ -52,10 +52,11 @@ else
 }
 
 @code {
-    public string PlayerName { get; set; }
-
     [Parameter]
     public string LobbyName { get; set; }
+    private bool WasInvite => NavigationManager.Uri.Contains("/lobby/");
+
+    public string PlayerName { get; set; }
 
     private Player player;
     private Lobby lobby;
