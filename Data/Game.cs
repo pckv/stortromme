@@ -12,6 +12,8 @@ namespace broken_picturephone_blazor.Data
         public int CurrentPage { get; set; }
         public IList<Player> ReadyPlayers { get; set; }
 
+        private IList<Player> shuffledPlayers;
+
         public event Action OnNextPage;
         public event Action OnGameEnded;
 
@@ -102,7 +104,11 @@ namespace broken_picturephone_blazor.Data
 
         private void CreateBooks()
         {
-            foreach (var player in Players)
+            // Shuffle players so that assigned books are unpredictable
+            shuffledPlayers = Players.OrderBy(p => Guid.NewGuid()).ToList();
+
+            // Create the first page of every book
+            foreach (var player in shuffledPlayers)
             {
                 var book = new Book { Master = player };
 
@@ -113,31 +119,15 @@ namespace broken_picturephone_blazor.Data
             }
         }
 
-        private Player GetAuthorForBook(Book book, IList<Player> assignedPlayers)
-        {
-            var previousAuthors = book.Pages
-                .Reverse()
-                .Take(Players.Count - 1)
-                .Select(p => p.Author)
-                .ToList();
-
-            return Players
-                .Where(p => !previousAuthors.Contains(p) && !assignedPlayers.Contains(p))
-                .OrderBy(p => Guid.NewGuid())
-                .FirstOrDefault();
-        }
-
         private void CreateNewPages()
         {
-            var assignedPlayers = new List<Player>();
+            // Shift assignees right by one
+            shuffledPlayers = shuffledPlayers.Skip(1).Concat(shuffledPlayers.Take(1)).ToList();
 
             // Create a new page for each book
-            foreach (var book in Books)
+            for (var i = 0; i < Books.Count; i++)
             {
-                var author = GetAuthorForBook(book, assignedPlayers);
-                assignedPlayers.Add(author);;
-
-                AddNewPage(book, author);
+                AddNewPage(Books[i], shuffledPlayers[i]);
             }
         }
     }
