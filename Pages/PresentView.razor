@@ -1,5 +1,6 @@
 @using broken_picturephone_blazor.Data
 @using broken_picturephone_blazor.Component
+@inject LobbyService LobbyService
 
 <div class="container">
     <div class="row">
@@ -14,6 +15,9 @@
                 }
             }
         </div>
+        <div class="col-md-4">
+            <button @onclick="LeaveLobby" class="btn btn-primary">Leave lobby</button>
+        </div>
     </div>
 </div>
 
@@ -27,4 +31,9 @@
      
     private Game game => Lobby.Game;
     private IList<Book> books => game.Books;
+
+    public void LeaveLobby()
+    {
+        LobbyService.LeaveLobby(Player, Lobby);
+    }
 }
