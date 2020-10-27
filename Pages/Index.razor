@@ -1,4 +1,5 @@
 @page "/"
+@page "/{lobbyName}"
 @using broken_picturephone_blazor.Component
 @using broken_picturephone_blazor.Services
 @using broken_picturephone_blazor.Data
@@ -28,13 +29,13 @@ else
         <div class="row">
             <div class="col-sm-3">
                 <h4>Name: </h4>
-                <input @bind="playerName" class="form-control" placeholder="name">
+                <input @bind="PlayerName" class="form-control" placeholder="name">
             </div>
         </div>
         <div class="row">
             <div class="col-sm-3">
                 <h4>Lobby name:</h4>
-                <input @bind="lobbyName" class="form-control" placeholder="lobby name">
+                <input @bind="LobbyName" class="form-control" placeholder="lobby name">
             </div>
         </div>
         <div class="divider"></div>
@@ -51,8 +52,10 @@ else
 }
 
 @code {
-    private string playerName;
-    private string lobbyName;
+    public string PlayerName { get; set; }
+
+    [Parameter]
+    public string LobbyName { get; set; }
 
     private Player player;
     private Lobby lobby;
@@ -68,11 +71,11 @@ else
     {
         try
         {
-            (lobby, player) = LobbyService.CreateOrJoinLobby(this.lobbyName, this.playerName);
+            (lobby, player) = LobbyService.CreateOrJoinLobby(this.LobbyName, this.PlayerName);
         }
         catch (PlayerExistsException)
         {
-            errorMessage = $"The name {playerName} is taken";
+            errorMessage = $"The name {PlayerName} is taken";
             return;
         }
         catch (GameInProgressException)
