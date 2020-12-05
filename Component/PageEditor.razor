@@ -4,13 +4,22 @@
 {
     <input @bind="Page.Content" class="form-control" placeholder="Enter anything">
 }
-else
+else if (Page.ContentType == ContentType.Image)
 {
-    <Canvas></Canvas>
+    <Canvas @ref="canvas"></Canvas>
 }
 
 @code
 {
     [Parameter]
     public Page Page { get; set; }
+
+    private Canvas canvas;
+
+    public async Task Save() {
+        // Save the encoded image data
+        if (Page.ContentType == ContentType.Image) {
+            Page.Content = await canvas.GetData();
+        }
+    }
 }

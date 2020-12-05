@@ -20,11 +20,11 @@
         <div class="col-md playfield">
             @if (previousPage != null)
             {
-                <p><PageViewer Page=previousPage/></p>
+                <PageViewer Page=previousPage/>
             }
             @if (page != null)
             {
-                <PageEditor Page=page/>
+                <PageEditor @ref="pageEditor" Page=page/>
                 <button @onclick="SubmitPage" class="btn btn-primary">Submit</button>
             }
         </div>
@@ -48,6 +48,8 @@
     // TODO: optimization if the page is cloned and worked on locally
     private Page page => book?.Pages[game.CurrentPage];
     private Page previousPage => game.CurrentPage > 0 ? book?.Pages[game.CurrentPage - 1] : null;
+
+    private PageEditor pageEditor;
     
     protected override void OnInitialized()
     {
@@ -71,10 +73,15 @@
         await InvokeAsync(StateHasChanged);
     }
 
-    public void SubmitPage()
+    public async void SubmitPage()
     {
+        await pageEditor.Save();
+
         var submitBook = book;
+        
         book = null;
+        await InvokeAsync(StateHasChanged);
+
         game.SubmitPage(submitBook);
     }
 

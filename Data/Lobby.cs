@@ -110,11 +110,5 @@ namespace broken_picturephone_blazor.Data
             player.IsModerator = true;
             OnLobbyUpdated?.Invoke();
         }
-
-        public void UpdateSettings(Settings settings)
-        {
-            this.Settings = settings;
-            OnLobbyUpdated?.Invoke();
-        }
     }
 }

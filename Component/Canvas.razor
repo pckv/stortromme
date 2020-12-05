@@ -1,15 +1,31 @@
 @inject IJSRuntime JSRuntime;
+@implements IAsyncDisposable
 
-<canvas @ref="canvas" id="cfd"></canvas>
+<canvas @ref="canvas" id=@CanvasId></canvas>
 
-@code {
+@code {    
+    [Parameter]
+    public string DisplayData { get; set; }
+    
+    public string CanvasId = Guid.NewGuid().ToString();
+
     private ElementReference canvas;
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
         {
-            await JSRuntime.InvokeAsync<string>("initializeCanvas", canvas);
+            await JSRuntime.InvokeAsync<string>("initializeCanvas", canvas, DisplayData);
         }
+    }
+
+    public async Task<string> GetData()
+    {
+        return await JSRuntime.InvokeAsync<string>("saveCanvas", canvas);
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        await JSRuntime.InvokeAsync<string>("disposeCanvas", canvas);
     }
 }
