@@ -1,7 +1,9 @@
 @inject IJSRuntime JSRuntime;
 @implements IAsyncDisposable
 
-<canvas @ref="canvas" id=@CanvasId></canvas>
+<div class="canvas-container">
+    <canvas @ref="canvas" id=@CanvasId></canvas>
+</div>
 
 @code {    
     [Parameter]
