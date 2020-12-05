@@ -44,6 +44,7 @@ namespace broken_picturephone_blazor.Data
             PageTypePattern = new List<ContentType>();
 
             // TODO: add this to settings in lobby
+            PageTypePattern.Add(ContentType.Image);
             PageTypePattern.Add(ContentType.Text);
         }
 
