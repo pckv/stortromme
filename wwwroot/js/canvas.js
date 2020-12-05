@@ -1,13 +1,12 @@
 window.cfds = {};
 
 window.initializeCanvas = (canvas, displayData) => {
-    console.log('initializing canvas ' + canvas.id);
-
     // initialize
     const cfd = new CanvasFreeDrawing.default({
         elementId: canvas.id,
         width: 500,
         height: 500,
+        lineWidth: 8,
         disabled: !!displayData,
     });
 
@@ -20,22 +19,24 @@ window.initializeCanvas = (canvas, displayData) => {
         return;
     }
 
-    // set properties
-    cfd.setLineWidth(8); // in px
-    cfd.setStrokeColor([0, 0, 0]); // in RGB
+    if (localStorage.canvasCache) {
+        cfd.restore(localStorage.canvasCache);
+    }
 
-    // listen to events
-    cfd.on({ event: 'redraw' }, () => {
-        // code...
+    const container = document.getElementById(`${canvas.id}-container`);
+    // store local snapshot every 10 redraws
+    // todo maybe: store on every mouseup/touchend/clear (or fork the repo and
+    // add an event for every complete action, including undo/redo)
+    cfd.on({ event: 'redraw', counter: 10 }, () => {
+        localStorage.canvasCache = cfd.save();
     });
 }
 
 window.saveCanvas = (canvas) => {
-    console.log('saving canvas ' + canvas.id);
     return window.cfds[canvas.id].save();
 }
 
 window.disposeCanvas = (canvas) => {
-    console.log('disposing canvas ' + canvas.id);
-    delete window.cfds[canvas.id]
+    delete window.cfds[canvas.id];
+    delete localStorage.canvasCache;
 }
