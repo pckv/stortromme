@@ -7,6 +7,7 @@ window.initializeCanvas = (canvas, displayData) => {
         width: 500,
         height: 500,
         lineWidth: getLineWidth(),
+        strokeColor: getColor(),
         maxSnapshots: 30,
         disabled: !!displayData,
     });
@@ -36,6 +37,7 @@ window.initializeCanvas = (canvas, displayData) => {
 }
 
 window.saveCanvas = (canvas) => {
+    console.log('saving canvas ' + canvas.id);
     return window.cfds[canvas.id].save();
 }
 
@@ -46,10 +48,13 @@ window.disposeCanvas = (canvas) => {
 
 function createButtons(canvas, cfd) {
     createLineWidthButton(canvas, cfd);
+    createButton(canvas, 'Fill', () => cfd.toggleBucketTool());
 
     createButton(canvas, 'Redo', () => cfd.redo());
     createButton(canvas, 'Undo', () => cfd.undo());
     createButton(canvas, 'Clear', () => cfd.clear());
+
+    createColorButtons(canvas, cfd);
 }
 
 function createButton(canvas, name, action) {
@@ -77,6 +82,31 @@ function createLineWidthButton(canvas, cfd) {
     canvas.parentElement.prepend(button);
 }
 
+function createColorButtons(canvas, cfd) {
+    // color palette from PICO 8: https://lospec.com/palette-list/pico-8
+    colors = [
+        [0,0,0],        [29,43,83],     [126,37,83],    [0,135,81],
+        [171,82,54],    [95,87,79],     [194,195,199],  [255,241,232],
+        [255,0,77],     [255,163,0],    [255,236,39],   [0,228,54],
+        [41,173,255],   [131,118,156],  [255,119,168],  [255,204,170],
+    ];
+
+    const colorButtonContainer = document.createElement('div');
+    for (const button of colors.map(c => createColorButton(c, cfd))) {
+        colorButtonContainer.appendChild(button);
+    }
+
+    canvas.parentElement.append(colorButtonContainer);
+}
+
+function createColorButton(color, cfd) {
+    const button = document.createElement('button');
+    button.classList.add('btn', 'btn-outline-dark');
+    button.style.backgroundColor = `rgb(${color.join(',')})`
+    button.onclick = () => setColor(color, cfd);
+    return button;
+}
+
 function setLineWidth(lineWidth, cfd) {
     localStorage.canvasLineWidth = lineWidth;
     cfd.setLineWidth(lineWidth);
@@ -86,4 +116,15 @@ function getLineWidth() {
     return localStorage.canvasLineWidth
         ? parseInt(localStorage.canvasLineWidth)
         : 2;
+}
+
+function setColor(color, cfd) {
+    localStorage.canvasColor = JSON.stringify(color);
+    cfd.setDrawingColor(color);
+}
+
+function getColor() {
+    return localStorage.canvasColor
+        ? JSON.parse(localStorage.canvasColor)
+        : [0, 0, 0];
 }
