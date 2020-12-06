@@ -2,12 +2,13 @@
 @implements IAsyncDisposable
 
 <div class="canvas-container">
-    <canvas @ref="canvas" id=@CanvasId style="user-select: none;"></canvas>
+    <canvas @ref="canvas" id=@CanvasId class=@(Disabled ? "canvas-view" : "canvas-edit")></canvas>
 </div>
 
 @code {    
     [Parameter]
     public string DisplayData { get; set; }
+    public bool Disabled => !string.IsNullOrEmpty(DisplayData);
     
     public string CanvasId = Guid.NewGuid().ToString();
 

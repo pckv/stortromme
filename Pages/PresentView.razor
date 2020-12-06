@@ -16,6 +16,17 @@
             }
         </div>
         <div class="col-md-4">
+            <h3>Players (@Lobby.Players.Count)</h3>
+            <div class="col-md players">
+                <ul>
+                    @foreach (var player in Lobby.Players)
+                    {
+                        <li>
+                            <PlayerListItem Player=player></PlayerListItem>
+                        </li>
+                    }
+                </ul>
+            </div>
             <button @onclick="LeaveLobby" class="btn btn-primary">Leave lobby</button>
         </div>
     </div>

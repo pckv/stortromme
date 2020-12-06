@@ -1,0 +1,7 @@
+.canvas-container {
+    user-select: none;
+}
+
+.canvas-edit {
+    border: 1px solid black;
+}
