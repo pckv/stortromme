@@ -27,7 +27,11 @@ namespace broken_picturephone_blazor
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddRazorPages();
-            services.AddServerSideBlazor();
+            services.AddServerSideBlazor()
+                .AddHubOptions(options =>
+                {
+                    options.MaximumReceiveMessageSize = 1024 * 1024;  // 1 MB
+                });
 
             services.AddSingleton<LobbyService>();
         }
