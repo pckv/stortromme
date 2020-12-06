@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Blazored.LocalStorage;
 using broken_picturephone_blazor.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Components;
@@ -32,6 +33,8 @@ namespace broken_picturephone_blazor
                 {
                     options.MaximumReceiveMessageSize = 1024 * 1024;  // 1 MB
                 });
+            
+            services.AddBlazoredLocalStorage();
 
             services.AddSingleton<LobbyService>();
         }

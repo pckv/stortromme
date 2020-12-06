@@ -5,4 +5,8 @@
     <RootNamespace>broken_picturephone_blazor</RootNamespace>
   </PropertyGroup>
 
+  <ItemGroup>
+    <PackageReference Include="Blazored.LocalStorage" Version="3.0.0" />
+  </ItemGroup>
+
 </Project>

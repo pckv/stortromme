@@ -1,10 +1,14 @@
 @page "/"
 @page "/lobby/{lobbyName}"
+
 @using broken_picturephone_blazor.Component
 @using broken_picturephone_blazor.Services
 @using broken_picturephone_blazor.Data
+
 @inject NavigationManager NavigationManager
 @inject LobbyService LobbyService
+@inject Blazored.LocalStorage.ILocalStorageService localStore
+
 @implements IDisposable
 
 <Navbar/>
@@ -71,6 +75,19 @@ else
 
     private string errorMessage;
 
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            if (!WasInvite) {
+                lobbyForm.LobbyName = await localStore.GetItemAsync<string>("lobbyName");
+            }
+
+            lobbyForm.PlayerName = await localStore.GetItemAsync<string>("playerName");
+            await InvokeAsync(StateHasChanged);
+        }
+    }
+
     public void OnErrorDialogClosed()
     {
         errorMessage = string.Empty;
@@ -92,6 +109,9 @@ else
             errorMessage = "The game in this lobby has already started";
             return;
         }
+
+        localStore.SetItemAsync("lobbyName", lobbyForm.LobbyName);
+        localStore.SetItemAsync("playerName", lobbyForm.PlayerName);
 
         lobby.OnLobbyUpdated += OnLobbyUpdated;
         lobby.OnPlayerRemoved += OnPlayerRemoved;
