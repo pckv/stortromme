@@ -1,18 +1,1 @@
-.error-container {
-    display: flex;
-    flex-direction: column;
-    justify-content: space-around;
-    position: absolute;
-    width: 50vw;
-    height: 50vh;
-    right: 25vw;
-    top: 25vh;
-    border: 2px solid black;
-    background: white;
-    box-shadow: 13px 13px 49px 0px rgba(0,0,0,0.75);
-}
-
-.error-message {
-    text-align: center;
-    font-size: 22pt;
-}
+/* moved to wwwroot/css/components.css */
