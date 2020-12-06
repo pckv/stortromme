@@ -26,24 +26,28 @@
 else
 {
     <div class="container">
-        <div class="row">
-            <div class="col-sm-3">
-                <h4>Lobby name:</h4>
-                <input @bind="LobbyName" class="form-control" placeholder="lobby name" disabled=@WasInvite>
+        <EditForm Model=@lobbyForm OnValidSubmit=@CreateOrJoinLobby>
+            <DataAnnotationsValidator />
+            <div class="row">
+                <div class="col-sm-3">
+                    <h4>Lobby name:</h4>
+                    <InputText @bind-Value="lobbyForm.LobbyName" class="form-control" placeholder="lobby name" disabled=@WasInvite />
+                </div>
             </div>
-        </div>
-        <div class="row">
-            <div class="col-sm-3">
-                <h4>Name: </h4>
-                <input @bind="PlayerName" class="form-control" placeholder="name">
+            <div class="row">
+                <div class="col-sm-3">
+                    <h4>Name: </h4>
+                    <InputText @bind-Value="lobbyForm.PlayerName" class="form-control" placeholder="name" />
+                </div>
             </div>
-        </div>
-        <div class="divider"></div>
-        <div class="row">
-            <div class="col-sm-3">
-                <button @onclick="CreateOrJoinLobby" class="btn btn-primary">Join or create lobby</button>
+            <div class="divider"></div>
+            <div class="row">
+                <div class="col-sm-3">
+                    <button type="submit" class="btn btn-primary">Join or create lobby</button>
+                </div>
             </div>
-        </div>
+            <ValidationSummary />
+        </EditForm>
     </div>
 }
 @if (!string.IsNullOrEmpty(errorMessage))
@@ -53,10 +57,14 @@ else
 
 @code {
     [Parameter]
-    public string LobbyName { get; set; }
-    private bool WasInvite => NavigationManager.Uri.Contains("/lobby/");
+    public string LobbyName { 
+        get => lobbyForm.LobbyName; 
+        set => lobbyForm.LobbyName = value;
+    }
 
-    public string PlayerName { get; set; }
+    private LobbyForm lobbyForm = new LobbyForm();
+
+    private bool WasInvite => NavigationManager.Uri.Contains("/lobby/");
 
     private Player player;
     private Lobby lobby;
@@ -72,11 +80,11 @@ else
     {
         try
         {
-            (lobby, player) = LobbyService.CreateOrJoinLobby(this.LobbyName, this.PlayerName);
+            (lobby, player) = LobbyService.CreateOrJoinLobby(lobbyForm.LobbyName, lobbyForm.PlayerName);
         }
         catch (PlayerExistsException)
         {
-            errorMessage = $"The name {PlayerName} is taken";
+            errorMessage = $"The name {lobbyForm.PlayerName} is taken";
             return;
         }
         catch (GameInProgressException)
