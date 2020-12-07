@@ -41,7 +41,7 @@
                 <h3>Game settings</h3>
                 <div>
                     <label for="pages">Pages</label>
-                    <input id="pages" class="form-control" type="number" @bind="settings.Pages" title="Pages" disabled=@(!Player.IsModerator)>
+                    <input id="pages" class="form-control" type="number" @bind="settings.Pages" title="Pages" disabled=@(!Player.IsModerator) min=1 max=50>
                     
                     <label for="first-page">First page</label>
                     <select id="first-page" class="form-control selectpicker" @bind="settings.FirstPageType" disabled=@(!Player.IsModerator)>
@@ -54,8 +54,19 @@
                     <label>Page pattern</label>
                     <div>
                         @if (Player.IsModerator) {
-                            <button class="btn btn-secondary" @onclick="@(() => settings.PageTypePattern.Add(ContentType.Text))">Add pattern</button>
-                            <button class="btn btn-secondary" @onclick="@(() => settings.PageTypePattern.RemoveAt(settings.PageTypePattern.Count - 1))">Remove pattern</button>
+                            <button 
+                                class="btn btn-secondary"
+                                @onclick="@(() => settings.PageTypePattern.Add(ContentType.Text))"
+                            >
+                                Add pattern
+                            </button>
+                            <button
+                                class="btn btn-secondary"
+                                @onclick="@(() => settings.PageTypePattern.RemoveAt(settings.PageTypePattern.Count - 1))"
+                                disabled=@(settings.PageTypePattern.Count <= 1)
+                            >
+                                Remove pattern
+                            </button>
                         }
                         @for (var i = 0; i < settings.PageTypePattern.Count; i++)
                         {
