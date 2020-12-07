@@ -2,6 +2,7 @@
 
 @if (Page.ContentType == ContentType.Text)
 {
+    <h4>Enter a prompt</h4>
     <input @bind="Page.Content" class="form-control" placeholder="Enter anything">
 }
 else if (Page.ContentType == ContentType.Image)
