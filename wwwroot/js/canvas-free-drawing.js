@@ -159,25 +159,25 @@
 	        this.toggleCursor();
 	        return this.isDrawingModeEnabled;
 		};
-		CanvasFreeDrawing.prototype.zoomScaleX = function () {
-			return this.width / this.canvas.offsetWidth;
+		CanvasFreeDrawing.prototype.scaledX = function (x) {
+			return parseInt(x * (this.width / this.canvas.offsetWidth));
 		};
-		CanvasFreeDrawing.prototype.zoomScaleY = function () {
-			return this.height / this.canvas.offsetHeight;
+		CanvasFreeDrawing.prototype.scaledY = function (y) {
+			return parseInt(y * (this.height / this.canvas.offsetHeight));
 		};
 	    CanvasFreeDrawing.prototype.mouseDown = function (event) {
 	        if (event.button !== 0)
 	            return;
-	        this.drawPoint(event.offsetX * this.zoomScaleX(), event.offsetY * this.zoomScaleY());
+	        this.drawPoint(this.scaledX(event.offsetX), this.scaledY(event.offsetY));
 	    };
 	    CanvasFreeDrawing.prototype.mouseMove = function (event) {
-	        this.drawLine(event.offsetX * this.zoomScaleX(), event.offsetY * this.zoomScaleY(), event);
+	        this.drawLine(this.scaledX(event.offsetX), this.scaledY(event.offsetY), event);
 	    };
 	    CanvasFreeDrawing.prototype.touchStart = function (event) {
 	        if (event.changedTouches.length > 0) {
 				var _a = event.changedTouches[0], pageX = _a.pageX, pageY = _a.pageY, identifier = _a.identifier;
-	            var x = (pageX - this.canvas.offsetLeft) * this.zoomScaleX();
-	            var y = (pageY - this.canvas.offsetTop) * this.zoomScaleY();
+	            var x = this.scaledX(pageX - this.canvas.offsetLeft);
+	            var y = this.scaledY(pageY - this.canvas.offsetTop);
 	            this.touchIdentifier = identifier;
 	            this.drawPoint(x, y);
 	        }
@@ -185,8 +185,8 @@
 	    CanvasFreeDrawing.prototype.touchMove = function (event) {
 	        if (event.changedTouches.length > 0) {
 				var _a = event.changedTouches[0], pageX = _a.pageX, pageY = _a.pageY, identifier = _a.identifier;
-	            var x = (pageX - this.canvas.offsetLeft) * this.zoomScaleX();
-	            var y = (pageY - this.canvas.offsetTop) * this.zoomScaleY();
+	            var x = this.scaledX(pageX - this.canvas.offsetLeft);
+	            var y = this.scaledX(pageY - this.canvas.offsetTop);
 	            // check if is multi touch, if it is do nothing
 	            if (identifier != this.touchIdentifier)
 	                return;
@@ -220,6 +220,10 @@
 	        this.storeSnapshot();
 	    };
 	    CanvasFreeDrawing.prototype.drawPoint = function (x, y) {
+			console.log(this.isBucketToolEnabled);
+			console.log(this.bucketToolColor);
+			console.log(x);
+			console.log(y);
 	        if (this.isBucketToolEnabled) {
 	            this.fill(x, y, this.bucketToolColor, {
 	                tolerance: this.bucketToolTolerance,
