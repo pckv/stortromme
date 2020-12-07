@@ -7,14 +7,14 @@
 
 <div class="container">
     <div class="row">
-        <div class="col-md playfield">
+        <div class="col-md canvas-edit-col">
             @if (page != null)
             {
                 <PageEditor @ref="pageEditor" Page=page/>
                 <button @onclick="SubmitPage" class="btn btn-primary">Submit</button>
             }
         </div>
-        <div class="col-md previous">
+        <div class="col-md">
             @if (previousPage != null)
             {
                 <h4>Previous page</h4>
@@ -23,9 +23,9 @@
         </div>
     </div>
     <div class="row">
-        <div class="col-md stuff">
+        <div class="col-md">
             <h3>Page @(game.CurrentPage + 1)/@game.Settings.Pages</h3>
-            <div class="col-md players">
+            <div class="col-md">
                 <ul>
                     @foreach (var player in Lobby.Players)
                     {

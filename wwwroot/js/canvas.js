@@ -4,8 +4,8 @@ window.initializeCanvas = (canvas, displayData) => {
     // initialize
     const cfd = new CanvasFreeDrawing.default({
         elementId: canvas.id,
-        width: 500,
-        height: 500,
+        width: 700,
+        height: 700,
         lineWidth: getLineWidth(),
         strokeColor: getColor(),
         maxSnapshots: 30,
@@ -92,6 +92,7 @@ function createColorButtons(canvas, cfd) {
     ];
 
     const colorButtonContainer = document.createElement('div');
+    colorButtonContainer.classList.add('canvas-color-button-container');
     for (const button of colors.map(c => createColorButton(c, cfd))) {
         colorButtonContainer.appendChild(button);
     }
@@ -101,7 +102,7 @@ function createColorButtons(canvas, cfd) {
 
 function createColorButton(color, cfd) {
     const button = document.createElement('button');
-    button.classList.add('btn', 'btn-outline-dark');
+    button.classList.add('btn', 'btn-outline-dark', 'canvas-color-button');
     button.style.backgroundColor = `rgb(${color.join(',')})`
     button.onclick = () => setColor(color, cfd);
     return button;
