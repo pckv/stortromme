@@ -117,6 +117,10 @@ else
         lobby.OnPlayerRemoved += OnPlayerRemoved;
         lobby.OnPlayerKicked += OnPlayerKicked;
         lobby.OnGameStarted += OnGameStarted;
+        
+        if (lobby.Game != null) {
+            lobby.Game.OnGameEnded += OnGameEnded;
+        }
     }
 
     public async void OnLobbyUpdated()
