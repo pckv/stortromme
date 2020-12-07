@@ -1,5 +1,6 @@
 using System;
-using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 
 namespace broken_picturephone_blazor.Data
 {
@@ -9,9 +10,7 @@ namespace broken_picturephone_blazor.Data
         private int maxPlayers;
         public int MaxPlayers 
         { 
-            get {
-                return maxPlayers;
-            }
+            get => maxPlayers;
             set {
                 maxPlayers = value;
                 OnSettingsUpdated?.Invoke();
@@ -21,18 +20,29 @@ namespace broken_picturephone_blazor.Data
         private int pages;
         public int Pages
         { 
-            get {
-                return pages;
-            }
-            set {
+            get => pages;
+            set
+            {
                 ShouldUpdatePagesDymanically = false;
                 pages = value;
                 OnSettingsUpdated?.Invoke();
             }
         }
 
-        public ContentType FirstPageType { get; set; }
-        public IList<ContentType> PageTypePattern { get; set; }
+        private ContentType firstPageType;
+        public ContentType FirstPageType { 
+            get => firstPageType;
+            set
+            {
+                firstPageType = value;
+                OnSettingsUpdated?.Invoke();
+            }
+        }
+        public ObservableCollection<ContentType> PageTypePattern { get; }
+        private void pageTypePatternChanged(object sender, NotifyCollectionChangedEventArgs args)
+        {
+            OnSettingsUpdated?.Invoke();
+        }
 
         public event Action OnSettingsUpdated;
 
@@ -41,7 +51,8 @@ namespace broken_picturephone_blazor.Data
             ShouldUpdatePagesDymanically = true;
             maxPlayers = 10;
             pages = 1;
-            PageTypePattern = new List<ContentType>();
+            PageTypePattern = new ObservableCollection<ContentType>();
+            PageTypePattern.CollectionChanged += pageTypePatternChanged;
 
             // TODO: add this to settings in lobby
             FirstPageType = ContentType.Text;
