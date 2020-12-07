@@ -47,42 +47,65 @@ window.disposeCanvas = (canvas) => {
 }
 
 function createButtons(canvas, cfd) {
-    createLineWidthButton(canvas, cfd);
-    createButton(canvas, 'Fill', () => cfd.toggleBucketTool());
+    const lineWidthButton = createLineWidthButton(canvas, cfd);
+    
+    createButton(canvas, 'Fill', button => {
+        const state = cfd.toggleBucketTool();
+        if (!state) {
+            button.classList.remove('btn-dark');
+            button.classList.add('btn-outline-dark');
+        } else {
+            button.classList.remove('btn-outline-dark');
+            button.classList.add('btn-dark');
+        }
+    });
 
     createButton(canvas, 'Redo', () => cfd.redo());
     createButton(canvas, 'Undo', () => cfd.undo());
     createButton(canvas, 'Clear', () => cfd.clear());
 
-    createColorButtons(canvas, cfd);
+    createColorButtons(canvas, cfd, lineWidthButton);
 }
 
 function createButton(canvas, name, action) {
     const button = document.createElement('button');
-    button.classList.add('btn', 'btn-secondary');
-    button.onclick = action;
+    button.classList.add('btn', 'btn-outline-dark');
+    button.onclick = () => action(button);
     button.innerText = name;
     canvas.parentElement.prepend(button);
 }
 
 function createLineWidthButton(canvas, cfd) {
     const button = document.createElement('button');
-    button.classList.add('btn', 'btn-outline-dark');
+    button.classList.add('btn', 'btn-outline-dark', 'canvas-line-width-button');
+    
+    const dot = document.createElement('span');
+    dot.classList.add('dot');
+    button.appendChild(dot);
+
+    button.drawShape = () => {
+        const dotRadius = `${getLineWidth()}px`;
+        dot.style.width = dotRadius;
+        dot.style.height = dotRadius;
+        dot.style.backgroundColor = `rgb(${getColor().join(',')})`;
+    }
 
     // Cycle through 2px, 5px, 8px line widths
     button.onclick = () => {
         let width = getLineWidth();
         width = width < 8 ? width + 3 : 2;
 
-        setLineWidth(width, cfd)
-        button.innerText = getLineWidth();
+        setLineWidth(width, cfd);
+        button.drawShape();
     }
-    button.innerText = getLineWidth();
+
+    button.drawShape();
 
     canvas.parentElement.prepend(button);
+    return button;
 }
 
-function createColorButtons(canvas, cfd) {
+function createColorButtons(canvas, cfd, lineWidthButton) {
     // color palette from PICO 8: https://lospec.com/palette-list/pico-8
     colors = [
         [0,0,0],        [29,43,83],     [126,37,83],    [0,135,81],
@@ -93,18 +116,21 @@ function createColorButtons(canvas, cfd) {
 
     const colorButtonContainer = document.createElement('div');
     colorButtonContainer.classList.add('canvas-color-button-container');
-    for (const button of colors.map(c => createColorButton(c, cfd))) {
+    for (const button of colors.map(c => createColorButton(c, cfd, lineWidthButton))) {
         colorButtonContainer.appendChild(button);
     }
 
     canvas.parentElement.append(colorButtonContainer);
 }
 
-function createColorButton(color, cfd) {
+function createColorButton(color, cfd, lineWidthButton) {
     const button = document.createElement('button');
     button.classList.add('btn', 'btn-outline-dark', 'canvas-color-button');
     button.style.backgroundColor = `rgb(${color.join(',')})`
-    button.onclick = () => setColor(color, cfd);
+    button.onclick = () => {
+        setColor(color, cfd);
+        lineWidthButton.drawShape();
+    };
     return button;
 }
 
