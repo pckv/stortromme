@@ -57,7 +57,7 @@ namespace broken_picturephone_blazor.Data
 
         public bool IsPlayerDone(Player player)
         {
-            return !(GetCurrentBook(player)?.Pages[CurrentPage].InProgress ?? false);
+            return HasGameEnded() || !(GetCurrentBook(player)?.Pages[CurrentPage].InProgress ?? false);
         }
 
         public void NextPage()
