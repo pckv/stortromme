@@ -3,6 +3,11 @@
  * for now CSS will be added to this file.
  */
 
+/* General */
+.disconnected {
+    text-decoration: line-through;
+}
+
 /* Canvas */
 .canvas-container {
     user-select: none;

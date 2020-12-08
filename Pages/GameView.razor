@@ -30,6 +30,7 @@
                     @foreach (var player in Lobby.Players)
                     {
                         <li>
+                            <input type="checkbox" checked="@game.IsPlayerDone(player)" disabled>
                             <PlayerListItem Player=player></PlayerListItem>
                         </li>
                     }
@@ -59,6 +60,7 @@
     protected override void OnInitialized()
     {
         game.OnNextPage += OnNextPage;
+        game.OnPageSubmitted += OnPageSubmitted;
 
         // In case of reconnection, look for a page in progress
         var currentBook = game.GetCurrentBook(Player);
@@ -78,6 +80,11 @@
         await InvokeAsync(StateHasChanged);
     }
 
+    public async void OnPageSubmitted()
+    {
+        await InvokeAsync(StateHasChanged);
+    }
+
     public async void SubmitPage()
     {
         await pageEditor.Save();
@@ -93,5 +100,6 @@
     public void Dispose()
     {
         game.OnNextPage -= OnNextPage;
+        game.OnPageSubmitted -= OnPageSubmitted;
     }
 }

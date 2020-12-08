@@ -15,6 +15,7 @@ namespace broken_picturephone_blazor.Data
         private IList<IList<Player>> playerPattern;
 
         public event Action OnNextPage;
+        public event Action OnPageSubmitted;
         public event Action OnGameEnded;
 
         public Game()
@@ -41,6 +42,10 @@ namespace broken_picturephone_blazor.Data
             {
                 NextPage();
             }
+            else
+            {
+                OnPageSubmitted?.Invoke();
+            }
         }
 
         public bool HasGameEnded() => CurrentPage >= Settings.Pages;
@@ -48,6 +53,11 @@ namespace broken_picturephone_blazor.Data
         public Book GetCurrentBook(Player player)
         {
             return Books.FirstOrDefault(b => b.Pages[CurrentPage].Author == player);
+        }
+
+        public bool IsPlayerDone(Player player)
+        {
+            return !(GetCurrentBook(player)?.Pages[CurrentPage].InProgress ?? false);
         }
 
         public void NextPage()
