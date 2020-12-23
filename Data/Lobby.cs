@@ -10,6 +10,7 @@ namespace broken_picturephone_blazor.Data
         public IList<Player> Players { get; set; }
         public Settings Settings { get; set; }
         public Game Game { get; set; }
+        public Presenter Presenter { get; set; }
 
         public event Action OnLobbyUpdated;
         public event Action<Player> OnPlayerRemoved;
@@ -108,6 +109,11 @@ namespace broken_picturephone_blazor.Data
         public void MakeModerator(Player player)
         {
             player.IsModerator = true;
+            OnLobbyUpdated?.Invoke();
+        }
+
+        public void LobbyUpdated()
+        {
             OnLobbyUpdated?.Invoke();
         }
     }

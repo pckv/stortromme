@@ -29,28 +29,23 @@
 else
 {
     <div class="container">
-        <EditForm Model=@lobbyForm OnValidSubmit=@CreateOrJoinLobby>
-            <DataAnnotationsValidator />
-            <div class="row">
-                <div class="col-sm-3">
-                    <h4>Lobby name:</h4>
+        <div class="col-sm-3">
+            <EditForm Model=@lobbyForm OnValidSubmit=@CreateOrJoinLobby>
+                <DataAnnotationsValidator />
+                <div class="form-group">
+                    <label>Lobby name</label>
                     <InputText @bind-Value="lobbyForm.LobbyName" class="form-control" placeholder="lobby name" disabled=@WasInvite />
                 </div>
-            </div>
-            <div class="row">
-                <div class="col-sm-3">
-                    <h4>Name: </h4>
+                <div class="form-group">
+                    <label>Name</label>
                     <InputText @bind-Value="lobbyForm.PlayerName" class="form-control" placeholder="name" />
                 </div>
-            </div>
-            <div class="divider"></div>
-            <div class="row">
-                <div class="col-sm-3">
+                <div class="form-group">
                     <button type="submit" class="btn btn-primary">Join or create lobby</button>
                 </div>
-            </div>
-            <ValidationSummary />
-        </EditForm>
+                <ValidationSummary />
+            </EditForm>
+        </div>
     </div>
 }
 @if (!string.IsNullOrEmpty(errorMessage))

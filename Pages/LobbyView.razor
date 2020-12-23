@@ -19,63 +19,72 @@
                             <PlayerListItem Player=player></PlayerListItem>
                             @if (Player != player && Player.IsModerator)
                             {
-                                <button @onclick="@(() => Lobby.KickPlayer(player))" class="btn btn-outline-danger">Kick</button>
+                                <button @onclick="() => Lobby.KickPlayer(player)" class="btn btn-outline-danger">Kick</button>
                                 @if (!player.IsModerator) 
                                 {
-                                    <button @onclick="@(() => Lobby.MakeModerator(player))" class="btn btn-outline-info">Make moderator</button>
+                                    <button @onclick="() => Lobby.MakeModerator(player)" class="btn btn-outline-info">Make moderator</button>
                                 }
                             }
                         </li>
                     }
                 </ul>
-                <button @onclick="LeaveLobby" class="btn btn-primary">Leave lobby</button>
+                <div class="form-group">
+                    <button @onclick="LeaveLobby" class="btn btn-primary">Leave lobby</button>
+                </div>
             </div>
 
             <div class="col-md">
                 <h3>Game settings</h3>
                 <div>
-                    <label for="pages">Pages</label>
-                    <input id="pages" class="form-control" type="number" @bind="settings.Pages" title="Pages" disabled=@(!Player.IsModerator) min=1 max=50>
+                    <div class="form-group">
+                        <label for="pages">Pages</label>
+                        <input id="pages" class="form-control" type="number" @bind="settings.Pages" title="Pages" disabled=@(!Player.IsModerator) min=1 max=50>
+                    </div>
                     
-                    <label for="first-page">First page</label>
-                    <select id="first-page" class="form-control selectpicker" @bind="settings.FirstPageType" disabled=@(!Player.IsModerator)>
-                        @foreach (var contentType in Enum.GetValues(typeof(ContentType)).Cast<ContentType>())
-                        {
-                            <option value=@contentType>@contentType.ToString()</option>
-                        }
-                    </select>
+                    <div class="form-group">
+                        <label for="first-page">First page</label>
+                        <select id="first-page" class="form-control selectpicker" @bind="settings.FirstPageType" disabled=@(!Player.IsModerator)>
+                            @foreach (var contentType in Enum.GetValues(typeof(ContentType)).Cast<ContentType>())
+                            {
+                                <option value=@contentType>@contentType.ToString()</option>
+                            }
+                        </select>
+                    </div>
 
-                    <label>Page pattern</label>
-                    <div>
-                        @if (Player.IsModerator) {
-                            <button 
-                                class="btn btn-secondary"
-                                @onclick="@(() => settings.PageTypePattern.Add(ContentType.Text))"
-                            >
-                                Add pattern
-                            </button>
-                            <button
-                                class="btn btn-secondary"
-                                @onclick="@(() => settings.PageTypePattern.RemoveAt(settings.PageTypePattern.Count - 1))"
-                                disabled=@(settings.PageTypePattern.Count <= 1)
-                            >
-                                Remove pattern
-                            </button>
-                        }
-                        @for (var i = 0; i < settings.PageTypePattern.Count; i++)
-                        {
-                            int local = i;
-                            <select id="first-page" class="form-control selectpicker" @bind="settings.PageTypePattern[local]" disabled=@(!Player.IsModerator)>
-                                @foreach (var contentType in Enum.GetValues(typeof(ContentType)).Cast<ContentType>())
-                                {
-                                    <option value=@contentType>@contentType.ToString()</option>
-                                }
-                            </select>
-                        }
+                    <div class="form-group">
+                        <label>Page pattern</label>
+                        <div>
+                            @if (Player.IsModerator) {
+                                <button 
+                                    class="btn btn-secondary"
+                                    @onclick="() => settings.PageTypePattern.Add(ContentType.Text)"
+                                >
+                                    Add pattern
+                                </button>
+                                <button
+                                    class="btn btn-secondary"
+                                    @onclick="() => settings.PageTypePattern.RemoveAt(settings.PageTypePattern.Count - 1)"
+                                    disabled=@(settings.PageTypePattern.Count <= 1)
+                                >
+                                    Remove pattern
+                                </button>
+                            }
+                            @for (var i = 0; i < settings.PageTypePattern.Count; i++)
+                            {
+                                int local = i;
+                                <select id="first-page" class="form-control selectpicker" @bind="settings.PageTypePattern[local]" disabled=@(!Player.IsModerator)>
+                                    @foreach (var contentType in Enum.GetValues(typeof(ContentType)).Cast<ContentType>())
+                                    {
+                                        <option value=@contentType>@contentType.ToString()</option>
+                                    }
+                                </select>
+                            }
+                        </div>
                     </div>
                 </div>
-                <div class="divider"></div>
-                <button class="btn btn-primary" @onclick="StartGame" disabled=@(!Player.IsModerator)>Start game</button>
+                <div class="form-group">
+                    <button class="btn btn-primary" @onclick="StartGame" disabled=@(!Player.IsModerator)>Start game</button>
+                </div>
             </div>
         </div>
     </div>

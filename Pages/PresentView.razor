@@ -5,14 +5,18 @@
 <div class="container">
     <div class="row">
         <div class="col-md-8">
-            @foreach (var book in books)
+            @if (presenter?.Book != null)
             {
-                <h1>@(book.Master.Name)'s book</h1>
-                @foreach (var page in book.Pages)
+                <h1>@(presenter.Book.Master.Name)'s book</h1>
+                @foreach (var page in presenter.Book.Pages.Take(presenter.DisplayPages).Reverse())
                 {
                     <h2>Page @(page.PageNumber + 1) (@(page.Author.Name))</h2>
                     <PageViewer Page=page></PageViewer>
                 }
+            }
+            else
+            {
+                <p class="text-center">Waiting for a moderator to present the books.</p>
             }
         </div>
         <div class="col-md-4">
@@ -23,11 +27,31 @@
                     {
                         <li>
                             <PlayerListItem Player=player></PlayerListItem>
+                            @if (Player.IsModerator)
+                            {
+                                @if (presenter?.Book.Master == player)
+                                {
+                                    @if (presenter.Book.Pages.Count > presenter.DisplayPages)
+                                    {
+                                        <button class="btn btn-sm btn-primary" @onclick="() => PresentNextPage()">Next page</button>
+                                    }
+                                }
+                                else
+                                {
+                                    <button class="btn btn-sm btn-outline-primary" @onclick="() => PresentBook(player)">Present book</button>
+                                }
+                            }
                         </li>
                     }
                 </ul>
             </div>
-            <button @onclick="LeaveLobby" class="btn btn-primary">Leave lobby</button>
+            
+            @if (Player.IsModerator)
+            {
+                <div class="form-group">
+                    <button @onclick="ReturnToLobby" class="btn btn-primary">Return to Lobby</button>
+                </div>
+            }
         </div>
     </div>
 </div>
@@ -40,10 +64,32 @@
     public Lobby Lobby { get; set; }
      
     private Game game => Lobby.Game;
-    private IList<Book> books => game.Books;
+    private Presenter presenter => Lobby.Presenter;
 
     public void LeaveLobby()
     {
         LobbyService.LeaveLobby(Player, Lobby);
+    }
+
+    public void ReturnToLobby()
+    {
+        Lobby.Game = null;
+        Lobby.LobbyUpdated();
+    }
+
+    public void PresentBook(Player player)
+    {
+        Lobby.Presenter = new Presenter
+        {
+            Book = game.Books.First(b => b.Master == player),
+            DisplayPages = 1,
+        };
+        Lobby.LobbyUpdated();
+    }
+
+    public void PresentNextPage()
+    {
+        presenter.DisplayPages++;
+        Lobby.LobbyUpdated();
     }
 }
