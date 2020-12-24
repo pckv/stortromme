@@ -59,14 +59,14 @@
                                     class="btn btn-secondary"
                                     @onclick="() => settings.PageTypePattern.Add(ContentType.Text)"
                                 >
-                                    Add pattern
+                                    Add
                                 </button>
                                 <button
                                     class="btn btn-secondary"
                                     @onclick="() => settings.PageTypePattern.RemoveAt(settings.PageTypePattern.Count - 1)"
                                     disabled=@(settings.PageTypePattern.Count <= 1)
                                 >
-                                    Remove pattern
+                                    Remove
                                 </button>
                             }
                             @for (var i = 0; i < settings.PageTypePattern.Count; i++)

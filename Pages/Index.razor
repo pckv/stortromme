@@ -29,8 +29,9 @@
 else
 {
     <div class="container">
+        <h1>stortrom.me</h1>
         <div class="row">
-            <div class="col-sm-3">
+            <div class="col-sm-4">
                 <EditForm Model=@lobbyForm OnValidSubmit=@CreateOrJoinLobby>
                     <DataAnnotationsValidator />
                     <div class="form-group">
@@ -47,7 +48,9 @@ else
                     <ValidationSummary />
                 </EditForm>
             </div>
-            <div class="col-sm-6 text-right">
+            <div class="col-sm-4"></div>
+            <div class="col-sm-4">
+                <h4>Currently playing</h4>
                 <p>
                     @LobbyService.Stats.Players players<br/>
                     @LobbyService.Stats.Lobbies lobbies

@@ -75,13 +75,12 @@
     flex-direction: column;
     justify-content: space-around;
     position: absolute;
-    width: 50vw;
-    height: 50vh;
-    right: 25vw;
-    top: 25vh;
-    border: 2px solid black;
-    background: white;
-    box-shadow: 13px 13px 49px 0px rgba(0,0,0,0.75);
+    width: 400px;
+    min-height: 200px;
+    right: calc(50vw - 200px);
+    top: calc(50vh - 100px);
+    background: #fdfdfd;
+    box-shadow: 7px 7px 14px 0px rgba(0,0,0,0.75);
 }
 
 .error-message {
