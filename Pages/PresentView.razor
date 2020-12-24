@@ -33,7 +33,7 @@
                                 {
                                     @if (presenter.Book.Pages.Count > presenter.DisplayPages)
                                     {
-                                        <button class="btn btn-sm btn-primary" @onclick="() => PresentNextPage()">Next page</button>
+                                        <button class="btn btn-sm btn-primary" @onclick="PresentNextPage">Next page</button>
                                     }
                                 }
                                 else

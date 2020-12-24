@@ -44,5 +44,16 @@ namespace broken_picturephone_blazor.Services
                 lobbies.Remove(lobby);
             }
         }
+
+        public void DisonnectLobby(Player player, Lobby lobby)
+        {
+            lobby.DisconnectPlayer(player);
+
+            // Remove lobby if every player disconnects
+            if (lobby.Players.All(p => !p.IsConnected))
+            {
+                lobbies.Remove(lobby);
+            }
+        }
     }
 }
