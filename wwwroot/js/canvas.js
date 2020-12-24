@@ -57,10 +57,6 @@ window.disposeCanvas = (canvas) => {
     delete localStorage.canvasCache;
 }
 
-function createIcon(icon) {
-    return `<span class="material-icons canvas-icon">${icon}</span>`;
-}
-
 function createButtons(canvas, cfd) {
     const tools = document.createElement('div');
     tools.classList.add('canvas-tools');
@@ -72,7 +68,7 @@ function createButtons(canvas, cfd) {
     tools.prepend(leftTools);
 
     const lineWidthButton = createLineWidthButton(rightTools, cfd);
-    createButton(rightTools, createIcon('format_color_fill'), button => {
+    createIconButton(rightTools, 'format_color_fill', button => {
         const state = cfd.toggleBucketTool();
         if (!state) {
             button.classList.remove('btn-dark');
@@ -83,24 +79,24 @@ function createButtons(canvas, cfd) {
         }
     });
     
-    createButton(leftTools, createIcon('redo'), () => cfd.redo());
-    createButton(leftTools, createIcon('undo'), () => cfd.undo());
-    createButton(leftTools, createIcon('delete'), () => cfd.clear());
+    createIconButton(leftTools, 'redo', () => cfd.redo());
+    createIconButton(leftTools, 'undo', () => cfd.undo());
+    createIconButton(leftTools, 'delete', () => cfd.clear());
 
     createColorButtons(canvas, cfd, lineWidthButton);
 }
 
-function createButton(parent, name, action) {
+function createIconButton(parent, icon, action) {
     const button = document.createElement('button');
-    button.classList.add('btn', 'btn-outline-dark');
+    button.classList.add('btn', 'btn-outline-dark', 'icon-button');
     button.onclick = () => action(button);
-    button.innerHTML = name;
+    button.innerHTML = `<span class="material-icons canvas-icon">${icon}</span>`;
     parent.prepend(button);
 }
 
 function createLineWidthButton(parent, cfd) {
     const button = document.createElement('button');
-    button.classList.add('btn', 'btn-outline-dark', 'canvas-line-width-button');
+    button.classList.add('btn', 'btn-outline-dark', 'icon-button');
     
     const dot = document.createElement('span');
     dot.classList.add('dot');
