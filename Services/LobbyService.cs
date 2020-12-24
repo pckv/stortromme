@@ -55,5 +55,17 @@ namespace broken_picturephone_blazor.Services
                 lobbies.Remove(lobby);
             }
         }
+
+        public LobbyStats Stats => new LobbyStats
+        {
+            Lobbies = lobbies.Count,
+            Players = lobbies.Sum(l => l.Players.Count),
+        };
+    }
+
+    public class LobbyStats
+    {
+        public int Lobbies { get; set; }
+        public int Players { get; set; }
     }
 }

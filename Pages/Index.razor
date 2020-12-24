@@ -29,22 +29,30 @@
 else
 {
     <div class="container">
-        <div class="col-sm-3">
-            <EditForm Model=@lobbyForm OnValidSubmit=@CreateOrJoinLobby>
-                <DataAnnotationsValidator />
-                <div class="form-group">
-                    <label>Lobby name</label>
-                    <InputText @bind-Value="lobbyForm.LobbyName" class="form-control" placeholder="lobby name" disabled=@WasInvite />
-                </div>
-                <div class="form-group">
-                    <label>Name</label>
-                    <InputText @bind-Value="lobbyForm.PlayerName" class="form-control" placeholder="name" />
-                </div>
-                <div class="form-group">
-                    <button type="submit" class="btn btn-primary">Join or create lobby</button>
-                </div>
-                <ValidationSummary />
-            </EditForm>
+        <div class="row">
+            <div class="col-sm-3">
+                <EditForm Model=@lobbyForm OnValidSubmit=@CreateOrJoinLobby>
+                    <DataAnnotationsValidator />
+                    <div class="form-group">
+                        <label>Lobby name</label>
+                        <InputText @bind-Value="lobbyForm.LobbyName" class="form-control" placeholder="lobby name" disabled=@WasInvite />
+                    </div>
+                    <div class="form-group">
+                        <label>Name</label>
+                        <InputText @bind-Value="lobbyForm.PlayerName" class="form-control" placeholder="name" />
+                    </div>
+                    <div class="form-group">
+                        <button type="submit" class="btn btn-primary">Join or create lobby</button>
+                    </div>
+                    <ValidationSummary />
+                </EditForm>
+            </div>
+            <div class="col-sm-6 text-right">
+                <p>
+                    @LobbyService.Stats.Players players<br/>
+                    @LobbyService.Stats.Lobbies lobbies
+                </p>
+            </div>
         </div>
     </div>
 }
