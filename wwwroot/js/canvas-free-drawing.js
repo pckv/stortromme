@@ -160,10 +160,10 @@
 	        return this.isDrawingModeEnabled;
 		};
 		CanvasFreeDrawing.prototype.scaledX = function (x) {
-			return parseInt(x * (this.width / this.canvas.offsetWidth));
+			return Math.round(x * (this.width / this.canvas.offsetWidth));
 		};
 		CanvasFreeDrawing.prototype.scaledY = function (y) {
-			return parseInt(y * (this.height / this.canvas.offsetHeight));
+			return Math.round(y * (this.height / this.canvas.offsetHeight));
 		};
 	    CanvasFreeDrawing.prototype.mouseDown = function (event) {
 	        if (event.button !== 0)
@@ -204,9 +204,13 @@
 	        this.canvas.dispatchEvent(this.events.mouseUpEvent);
 	    };
 	    CanvasFreeDrawing.prototype.mouseUpDocument = function () {
+			if (this.leftCanvasDrawing)
+				this.handleEndDrawing();
+			
 	        this.leftCanvasDrawing = false;
 	    };
-	    CanvasFreeDrawing.prototype.mouseLeave = function () {
+	    CanvasFreeDrawing.prototype.mouseLeave = function (event) {
+			this.drawLine(this.scaledX(event.offsetX), this.scaledY(event.offsetY), event);
 	        if (this.isDrawing)
 	            this.leftCanvasDrawing = true;
 	        this.isDrawing = false;
@@ -220,10 +224,6 @@
 	        this.storeSnapshot();
 	    };
 	    CanvasFreeDrawing.prototype.drawPoint = function (x, y) {
-			console.log(this.isBucketToolEnabled);
-			console.log(this.bucketToolColor);
-			console.log(x);
-			console.log(y);
 	        if (this.isBucketToolEnabled) {
 	            this.fill(x, y, this.bucketToolColor, {
 	                tolerance: this.bucketToolTolerance,
@@ -368,6 +368,10 @@
 	        return result;
 	    };
 	    CanvasFreeDrawing.prototype.getNodeColor = function (x, y, data) {
+			if (x < 0 || x >= this.width || y < 0 || y >= this.height) {
+				return [0, 0, 0, 255];
+			}
+
 	        var i = (x + y * this.width) * 4;
 	        return [data[i], data[i + 1], data[i + 2], data[i + 3]];
 	    };
