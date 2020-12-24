@@ -15,7 +15,7 @@
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
     },
-    "broken-picturephone-blazor": {
+    "stortromme": {
       "commandName": "Project",
       "dotnetRunMessages": "true",
       "launchBrowser": true,

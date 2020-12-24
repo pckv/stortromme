@@ -2,7 +2,7 @@ using System;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 
-namespace broken_picturephone_blazor.Data
+namespace stortromme.Data
 {
     public class Settings
     {

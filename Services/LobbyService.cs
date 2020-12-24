@@ -1,9 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using broken_picturephone_blazor.Data;
+using stortromme.Data;
 
-namespace broken_picturephone_blazor.Services
+namespace stortromme.Services
 {
     public class LobbyService 
     {

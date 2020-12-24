@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace broken_picturephone_blazor.Data
+namespace stortromme.Data
 {
     public class Book
     {

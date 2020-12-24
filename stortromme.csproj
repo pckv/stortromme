@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>net5.0</TargetFramework>
-    <RootNamespace>broken_picturephone_blazor</RootNamespace>
+    <RootNamespace>stortromme</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>

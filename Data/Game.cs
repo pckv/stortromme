@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace broken_picturephone_blazor.Data
+namespace stortromme.Data
 {
     public class Game
     {

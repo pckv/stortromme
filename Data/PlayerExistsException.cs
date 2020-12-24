@@ -1,6 +1,6 @@
 using System;
 
-namespace broken_picturephone_blazor.Data
+namespace stortromme.Data
 {
     public class PlayerExistsException : Exception
     {
