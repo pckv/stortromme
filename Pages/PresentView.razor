@@ -8,7 +8,7 @@
             @if (presenter?.Book != null)
             {
                 <h1>@(presenter.Book.Master.Name)'s book</h1>
-                @foreach (var page in presenter.Book.Pages.Take(presenter.DisplayPages).Reverse())
+                @foreach (var page in PresentPages())
                 {
                     <h2>Page @(page.PageNumber + 1) (@(page.Author.Name))</h2>
                     <PageViewer Page=page></PageViewer>
@@ -34,6 +34,10 @@
                                     @if (presenter.Book.Pages.Count > presenter.DisplayPages)
                                     {
                                         <button class="btn btn-sm btn-primary" @onclick="PresentNextPage">Next page</button>
+                                    }
+                                    else if (!presenter.Flipped)
+                                    {
+                                        <button class="btn btn-sm btn-warning" @onclick="FlipBook">Flip book</button>
                                     }
                                 }
                                 else
@@ -66,6 +70,16 @@
     private Game game => Lobby.Game;
     private Presenter presenter => Lobby.Presenter;
 
+    private IEnumerable<Page> PresentPages() {
+        var pages = presenter.Book.Pages.Take(presenter.DisplayPages);
+        if (!presenter.Flipped)
+        {
+            pages = pages.Reverse();
+        }
+
+        return pages;
+    }
+
     public void LeaveLobby()
     {
         LobbyService.LeaveLobby(Player, Lobby);
@@ -79,17 +93,19 @@
 
     public void PresentBook(Player player)
     {
-        Lobby.Presenter = new Presenter
-        {
-            Book = game.Books.First(b => b.Master == player),
-            DisplayPages = 1,
-        };
+        Lobby.Presenter = new Presenter(game.Books.First(b => b.Master == player));
         Lobby.LobbyUpdated();
     }
 
     public void PresentNextPage()
     {
         presenter.DisplayPages++;
+        Lobby.LobbyUpdated();
+    }
+
+    public void FlipBook()
+    {
+        presenter.Flipped = true;
         Lobby.LobbyUpdated();
     }
 }
