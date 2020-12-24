@@ -16,7 +16,6 @@
 
 .canvas-container button {
     margin-right: 2px;
-    margin-left: 2px;
 }
 
 .canvas-edit {
@@ -41,6 +40,10 @@
     align-items: center;
 }
 
+.canvas-icon {
+    font-size: 17px;
+}
+
 .dot {
     border-radius: 50%;
     display: inline-block;
@@ -49,6 +52,11 @@
 /* fix for mobile drawing */
 .canvas-edit-col {
     position: static;
+}
+
+.canvas-tools {
+    display: flex;
+    justify-content: space-between;
 }
 
 .canvas-color-button-container {

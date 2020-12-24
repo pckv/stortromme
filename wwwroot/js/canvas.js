@@ -1,5 +1,15 @@
 window.cfds = {};
 
+// color palette from PICO 8: https://lospec.com/palette-list/pico-8
+// also includes a 17th pure white color
+const colors = [
+    [0,0,0],        [29,43,83],     [126,37,83],    [0,135,81],
+    [171,82,54],    [95,87,79],     [194,195,199],  [255,241,232],
+    [255,0,77],     [255,163,0],    [255,236,39],   [0,228,54],
+    [41,173,255],   [131,118,156],  [255,119,168],  [255,204,170],
+    [255, 255, 255],
+];
+
 window.initializeCanvas = (canvas, displayData) => {
     // initialize
     const cfd = new CanvasFreeDrawing.default({
@@ -8,6 +18,7 @@ window.initializeCanvas = (canvas, displayData) => {
         height: 700,
         lineWidth: getLineWidth(),
         strokeColor: getColor(),
+        backgroundColor: colors[16],  // white background from palette
         maxSnapshots: 30,
         disabled: !!displayData,
     });
@@ -46,10 +57,22 @@ window.disposeCanvas = (canvas) => {
     delete localStorage.canvasCache;
 }
 
+function createIcon(icon) {
+    return `<span class="material-icons canvas-icon">${icon}</span>`;
+}
+
 function createButtons(canvas, cfd) {
-    const lineWidthButton = createLineWidthButton(canvas, cfd);
-    
-    createButton(canvas, 'Fill', button => {
+    const tools = document.createElement('div');
+    tools.classList.add('canvas-tools');
+    canvas.parentElement.prepend(tools);
+
+    const rightTools = document.createElement('div');
+    const leftTools = document.createElement('div');
+    tools.prepend(rightTools);
+    tools.prepend(leftTools);
+
+    const lineWidthButton = createLineWidthButton(rightTools, cfd);
+    createButton(rightTools, createIcon('format_color_fill'), button => {
         const state = cfd.toggleBucketTool();
         if (!state) {
             button.classList.remove('btn-dark');
@@ -59,23 +82,23 @@ function createButtons(canvas, cfd) {
             button.classList.add('btn-dark');
         }
     });
-
-    createButton(canvas, 'Redo', () => cfd.redo());
-    createButton(canvas, 'Undo', () => cfd.undo());
-    createButton(canvas, 'Clear', () => cfd.clear());
+    
+    createButton(leftTools, createIcon('redo'), () => cfd.redo());
+    createButton(leftTools, createIcon('undo'), () => cfd.undo());
+    createButton(leftTools, createIcon('delete'), () => cfd.clear());
 
     createColorButtons(canvas, cfd, lineWidthButton);
 }
 
-function createButton(canvas, name, action) {
+function createButton(parent, name, action) {
     const button = document.createElement('button');
     button.classList.add('btn', 'btn-outline-dark');
     button.onclick = () => action(button);
-    button.innerText = name;
-    canvas.parentElement.prepend(button);
+    button.innerHTML = name;
+    parent.prepend(button);
 }
 
-function createLineWidthButton(canvas, cfd) {
+function createLineWidthButton(parent, cfd) {
     const button = document.createElement('button');
     button.classList.add('btn', 'btn-outline-dark', 'canvas-line-width-button');
     
@@ -101,19 +124,11 @@ function createLineWidthButton(canvas, cfd) {
 
     button.drawShape();
 
-    canvas.parentElement.prepend(button);
+    parent.prepend(button);
     return button;
 }
 
 function createColorButtons(canvas, cfd, lineWidthButton) {
-    // color palette from PICO 8: https://lospec.com/palette-list/pico-8
-    colors = [
-        [0,0,0],        [29,43,83],     [126,37,83],    [0,135,81],
-        [171,82,54],    [95,87,79],     [194,195,199],  [255,241,232],
-        [255,0,77],     [255,163,0],    [255,236,39],   [0,228,54],
-        [41,173,255],   [131,118,156],  [255,119,168],  [255,204,170],
-    ];
-
     const colorButtonContainer = document.createElement('div');
     colorButtonContainer.classList.add('canvas-color-button-container');
     for (const button of colors.map(c => createColorButton(c, cfd, lineWidthButton))) {
