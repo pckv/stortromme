@@ -3,11 +3,12 @@
 @using stortromme.Component
 @inject LobbyService LobbyService
 @inject NavigationManager NavigationManager
+@inject IJSRuntime JSRuntime
 @implements IDisposable
 
 @if (Lobby != null)
 {
-    <h1>Connected to @Lobby.Name as @Player.Name</h1>
+    <h1>Connected as @Player.Name</h1>
     <div class="container">
         <div class="row">
             <div class="col-md">
@@ -29,7 +30,8 @@
                     }
                 </ul>
                 <div class="form-group">
-                    <button @onclick="LeaveLobby" class="btn btn-primary">Leave lobby</button>
+                    <button class="btn btn-outline-secondary" @onclick="CopyInviteLink">Copy invite</button>
+                    <button class="btn btn-primary" @onclick="LeaveLobby">Leave lobby</button>
                 </div>
             </div>
 
@@ -112,6 +114,11 @@
     public async void OnSettingsUpdated()
     {
         await InvokeAsync(StateHasChanged);
+    }
+
+    public async void CopyInviteLink()
+    {
+        await JSRuntime.InvokeVoidAsync("copyInviteLink", Lobby.Name);
     }
 
     public void StartGame()
