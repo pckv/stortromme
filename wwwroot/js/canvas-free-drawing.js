@@ -27,7 +27,8 @@
 	var AllowedEvents;
 	(function (AllowedEvents) {
 	    AllowedEvents["redraw"] = "redraw";
-	    AllowedEvents["fill"] = "fill";
+		AllowedEvents["fill"] = "fill";
+		AllowedEvents["actionend"] = "actionend";
 	    AllowedEvents["mouseup"] = "mouseup";
 	    AllowedEvents["mousedown"] = "mousedown";
 	    AllowedEvents["mouseenter"] = "mouseenter";
@@ -83,7 +84,8 @@
 	        // initialize events
 	        this.events = {
 	            redrawEvent: new Event('cfd_redraw'),
-	            fillEvent: new Event('cfd_fill'),
+				fillEvent: new Event('cfd_fill'),
+				actionEndEvent: new Event('cfd_actionend'),
 	            mouseUpEvent: new Event('cfd_mouseup'),
 	            mouseDownEvent: new Event('cfd_mousedown'),
 	            mouseEnterEvent: new Event('cfd_mouseenter'),
@@ -221,7 +223,8 @@
 	    };
 	    CanvasFreeDrawing.prototype.handleEndDrawing = function () {
 	        this.isDrawing = false;
-	        this.storeSnapshot();
+			this.storeSnapshot();
+			this.canvas.dispatchEvent(this.events.actionEndEvent);
 	    };
 	    CanvasFreeDrawing.prototype.drawPoint = function (x, y) {
 	        if (this.isBucketToolEnabled) {
