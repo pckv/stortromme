@@ -91,6 +91,8 @@
         // Local book is set to null first to prevent a race condition
         var submitBook = book;
         book = null;
+        await InvokeAsync(StateHasChanged);
+
         game.SubmitPage(submitBook);
     }
 

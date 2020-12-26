@@ -47,7 +47,6 @@ window.initializeCanvas = (canvas, displayData) => {
 }
 
 window.saveCanvas = (canvas) => {
-    console.log('saving canvas ' + canvas.id);
     return window.cfds[canvas.id].save();
 }
 
