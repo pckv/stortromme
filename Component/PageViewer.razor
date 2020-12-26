@@ -6,13 +6,11 @@
 }
 else if (Page.ContentType == ContentType.Image)
 {
-    <Canvas DisplayData=@Page.Content @ref="canvas"></Canvas>
+    <Canvas DisplayData=@Page.Content></Canvas>
 }
 
 @code
 {
     [Parameter]
     public Page Page { get; set; }
-
-    private Canvas canvas;
 }
