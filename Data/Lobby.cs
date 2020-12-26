@@ -10,8 +10,7 @@ namespace stortromme.Data
         public IList<Player> Players { get; set; }
         public Settings Settings { get; set; }
         public Game Game { get; set; }
-        public Presenter Presenter { get; set; }
-
+        
         public event Action OnLobbyUpdated;
         public event Action<Player> OnPlayerRemoved;
         public event Action<Player> OnPlayerKicked;

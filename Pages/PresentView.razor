@@ -68,7 +68,7 @@
     public Lobby Lobby { get; set; }
      
     private Game game => Lobby.Game;
-    private Presenter presenter => Lobby.Presenter;
+    private Presenter presenter => game.Presenter;
 
     private IEnumerable<Page> PresentPages() {
         var pages = presenter.Book.Pages.Take(presenter.DisplayPages);
@@ -93,7 +93,7 @@
 
     public void PresentBook(Player player)
     {
-        Lobby.Presenter = new Presenter(game.Books.First(b => b.Master == player));
+        Lobby.Game.Presenter = new Presenter(game.Books.First(b => b.Master == player));
         Lobby.LobbyUpdated();
     }
 

@@ -9,6 +9,7 @@ namespace stortromme.Data
         public IList<Player> Players { get; set; }
         public Settings Settings { get; set; }
         public IList<Book> Books { get; set; }
+        public Presenter Presenter { get; set; }
         public int CurrentPage { get; set; }
 
         private IList<IList<Player>> playerPattern;
