@@ -62,13 +62,8 @@
         game.OnNextPage += OnNextPage;
         game.OnPageSubmitted += OnPageSubmitted;
 
-        // In case of reconnection, look for a page in progress
         var currentBook = game.GetCurrentBook(Player);
-        if (currentBook == null)
-        {
-            game.PlayerReady(Player);
-        }
-        else if (currentBook.Pages[game.CurrentPage].InProgress)
+        if (currentBook.Pages[game.CurrentPage].InProgress)
         {
             book = currentBook;
         }

@@ -6,11 +6,10 @@ namespace stortromme.Data
 {
     public class Game
     {
-        public Settings Settings { get; set; }
         public IList<Player> Players { get; set; }
+        public Settings Settings { get; set; }
         public IList<Book> Books { get; set; }
         public int CurrentPage { get; set; }
-        public IList<Player> ReadyPlayers { get; set; }
 
         private IList<IList<Player>> playerPattern;
 
@@ -18,27 +17,28 @@ namespace stortromme.Data
         public event Action OnPageSubmitted;
         public event Action OnGameEnded;
 
-        public Game()
-        {
-            Books = new List<Book>();
-            ReadyPlayers = new List<Player>();
-            CurrentPage = -1;
-        }
+        public bool HasGameEnded => CurrentPage >= Settings.Pages;
+        private bool AreAllPagesSubmitted => Books.All(b => !b.Pages[CurrentPage].InProgress);
 
-        public void PlayerReady(Player player)
+        // First page is chosen after settings, and following pages are
+        // based on the pattern
+        private ContentType CurrentPageType => CurrentPage == 0 
+                ? Settings.FirstPageType
+                : Settings.PageTypePattern[(CurrentPage - 1) % Settings.PageTypePattern.Count];
+
+        public Game(IList<Player> players, Settings settings)
         {
-            ReadyPlayers.Add(player);
-            if (AreAllPlayersReady())
-            {
-                NextPage();
-                ReadyPlayers.Clear();
-            }
+            Players = players;
+            Settings = settings;
+            Books = new List<Book>();
+            CurrentPage = 0;
+            CreateBooks();
         }
 
         public void SubmitPage(Book book)
         {
             book.Pages[CurrentPage].InProgress = false;
-            if (AreAllPagesSubmitted())
+            if (AreAllPagesSubmitted)
             {
                 NextPage();
             }
@@ -48,8 +48,6 @@ namespace stortromme.Data
             }
         }
 
-        public bool HasGameEnded() => CurrentPage >= Settings.Pages;
-
         public Book GetCurrentBook(Player player)
         {
             return Books.FirstOrDefault(b => b.Pages[CurrentPage].Author == player);
@@ -57,49 +55,22 @@ namespace stortromme.Data
 
         public bool IsPlayerDone(Player player)
         {
-            return HasGameEnded() || !(GetCurrentBook(player)?.Pages[CurrentPage].InProgress ?? false);
+            return HasGameEnded || !(GetCurrentBook(player)?.Pages[CurrentPage].InProgress ?? false);
         }
 
         public void NextPage()
         {
             CurrentPage++;
 
-            if (HasGameEnded())
+            if (HasGameEnded)
             {
                 OnGameEnded?.Invoke();
             }
             else
             {
-                if (CurrentPage == 0)
-                {
-                    CreateBooks();
-                }
-                else
-                {
-                    CreateNewPages();
-                }
-
+                CreateNewPages();
                 OnNextPage?.Invoke();
             }
-        }
-
-        private bool AreAllPagesSubmitted()
-        {
-            return Books.All(b => !b.Pages[CurrentPage].InProgress);
-        }
-
-        private bool AreAllPlayersReady()
-        {
-            return Players.All(p => ReadyPlayers.Contains(p));
-        }
-
-        private ContentType GetCurrentPageType()
-        {
-            // First page is chosen after settings, and following pages are
-            // based on the pattern
-            return CurrentPage == 0 
-                ? Settings.FirstPageType
-                : Settings.PageTypePattern[(CurrentPage - 1) % Settings.PageTypePattern.Count];
         }
 
         private void AddNewPage(Book book, Player author)
@@ -107,7 +78,7 @@ namespace stortromme.Data
             book.Pages.Add(new Page
             {
                 Author = author,
-                ContentType = GetCurrentPageType(),
+                ContentType = CurrentPageType,
                 PageNumber = CurrentPage,
             });
         }

@@ -27,11 +27,7 @@ namespace stortromme.Data
 
         public void StartGame()
         {
-            Game = new Game 
-            { 
-                Settings = Settings,
-                Players = Players,
-            };
+            Game = new Game(Players, Settings); 
             OnGameStarted?.Invoke();
         }
 

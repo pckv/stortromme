@@ -13,7 +13,7 @@
 
 @if (player != null)
 {
-    if (lobby?.Game?.HasGameEnded() == true)
+    if (lobby?.Game?.HasGameEnded == true)
     {
         <PresentView Player=player Lobby=lobby></PresentView>
     }
