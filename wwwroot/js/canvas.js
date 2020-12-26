@@ -39,10 +39,9 @@ window.initializeCanvas = (canvas, displayData) => {
     // create all interactive elements
     createButtons(canvas, cfd);
 
-    // store local snapshot every 10 redraws
-    // todo maybe: store on every mouseup/touchend/clear (or fork the repo and
-    // add an event for every complete action, including undo/redo)
-    cfd.on({ event: 'redraw', counter: 10 }, () => {
+    // store local snapshot after every action
+    cfd.on({ event: 'actionend', counter: 10 }, () => {
+        console.log('saved locally');
         localStorage.canvasCache = cfd.save();
     });
 }
