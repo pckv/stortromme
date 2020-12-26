@@ -32,6 +32,10 @@
                         <li>
                             <input type="checkbox" checked="@game.IsPlayerDone(player)" disabled>
                             <PlayerListItem Player=player></PlayerListItem>
+                            @if (Player != player && Player.IsModerator)
+                            {
+                                <button @onclick="() => LobbyService.DisonnectLobby(player, Lobby)" class="btn btn-outline-danger">Disconnect</button>
+                            }
                         </li>
                     }
                 </ul>
