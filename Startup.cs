@@ -32,6 +32,10 @@ namespace stortromme
                 .AddHubOptions(options =>
                 {
                     options.MaximumReceiveMessageSize = 1024 * 1024;  // 1 MB
+                })
+                .AddCircuitOptions(options =>
+                {
+                    options.DisconnectedCircuitRetentionPeriod = TimeSpan.FromSeconds(10);
                 });
             
             services.AddBlazoredLocalStorage();
