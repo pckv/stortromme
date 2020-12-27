@@ -314,10 +314,10 @@
 	            var n = queue.pop();
 	            var w = n;
 	            var e = n;
-	            while (this.isNodeColorEqual(this.getNodeColor(w[0] - 1, w[1], newData), targetColor, tolerance)) {
+	            while (this.isNodeColorEqual(this.getNodeColor(w[0] - 1, w[1], newData), targetColor, tolerance) && w[0] > 0) {
 	                w = [w[0] - 1, w[1]];
 	            }
-	            while (this.isNodeColorEqual(this.getNodeColor(e[0] + 1, e[1], newData), targetColor, tolerance)) {
+	            while (this.isNodeColorEqual(this.getNodeColor(e[0] + 1, e[1], newData), targetColor, tolerance) && e[0] < this.canvas.width) {
 	                e = [e[0] + 1, e[1]];
 	            }
 	            var firstNode = w[0];
