@@ -12,7 +12,7 @@
         <h1>Connected as @Player.Name</h1>
         <div class="row">
             <div class="col-md">
-                <h3>Players (@Lobby.Players.Count)</h3>
+                <h3>Players (@(Lobby.Players.Count)/@(settings.MaxPlayers))</h3>
                 <ul>
                     @foreach (var player in Lobby.Players)
                     {
@@ -38,14 +38,22 @@
             <div class="col-md">
                 <h3>Game settings</h3>
                 <div>
+                    @if (Player.IsModerator)
+                    {
+                        <div class="form-group">
+                            <label>Max players</label>
+                            <input class="form-control" type="number" @bind="settings.MaxPlayers" min=1 max=@Settings.MAX_PLAYERS>
+                        </div>
+                    }
+
                     <div class="form-group">
-                        <label for="pages">Pages</label>
-                        <input id="pages" class="form-control" type="number" @bind="settings.Pages" title="Pages" disabled=@(!Player.IsModerator) min=1 max=50>
+                        <label>Pages</label>
+                        <input class="form-control" type="number" @bind="settings.Pages" disabled=@(!Player.IsModerator) min=1 max=@Settings.MAX_PLAYERS>
                     </div>
                     
                     <div class="form-group">
-                        <label for="first-page">First page</label>
-                        <select id="first-page" class="form-control selectpicker" @bind="settings.FirstPageType" disabled=@(!Player.IsModerator)>
+                        <label>First page</label>
+                        <select class="form-control selectpicker" @bind="settings.FirstPageType" disabled=@(!Player.IsModerator)>
                             @foreach (var contentType in Enum.GetValues(typeof(ContentType)).Cast<ContentType>())
                             {
                                 <option value=@contentType>@contentType.ToString()</option>

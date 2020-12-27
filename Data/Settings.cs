@@ -6,13 +6,15 @@ namespace stortromme.Data
 {
     public class Settings
     {
+        public const int MAX_PLAYERS = 64;
+
         public bool ShouldUpdatePagesDymanically { get; set; }
         private int maxPlayers;
         public int MaxPlayers 
         { 
             get => maxPlayers;
             set {
-                maxPlayers = value;
+                maxPlayers = Math.Clamp(value, 1, MAX_PLAYERS);
                 OnSettingsUpdated?.Invoke();
             }
         }
@@ -24,7 +26,7 @@ namespace stortromme.Data
             set
             {
                 ShouldUpdatePagesDymanically = false;
-                pages = value;
+                pages = Math.Clamp(value, 1, MAX_PLAYERS);
                 OnSettingsUpdated?.Invoke();
             }
         }
@@ -49,7 +51,7 @@ namespace stortromme.Data
         public Settings()
         {
             ShouldUpdatePagesDymanically = true;
-            maxPlayers = 10;
+            maxPlayers = MAX_PLAYERS;
             pages = 1;
             PageTypePattern = new ObservableCollection<ContentType>();
             PageTypePattern.CollectionChanged += pageTypePatternChanged;

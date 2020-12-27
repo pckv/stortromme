@@ -30,6 +30,12 @@ namespace stortromme.Services
                 throw new PlayerExistsException();
             }
 
+            // Throw when the lobby is full
+            if (lobby.Players.Count >= lobby.Settings.MaxPlayers)
+            {
+                throw new LobbyIsFullException();
+            }
+
             Player player = lobby.AddPlayer(playerName);
             return (lobby, player);
         }
