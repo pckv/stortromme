@@ -10,10 +10,9 @@ namespace stortromme.Data
         public IList<Player> Players { get; set; }
         public Settings Settings { get; set; }
         public Game Game { get; set; }
-        
+
         public event Action OnLobbyUpdated;
-        public event Action<Player> OnPlayerRemoved;
-        public event Action<Player> OnPlayerKicked;
+        public event Action<Player, bool> OnPlayerRemoved;
         public event Action OnGameStarted;
 
         public Lobby()
@@ -21,7 +20,7 @@ namespace stortromme.Data
             Players = new List<Player>();
 
             // Invoke OnLobbyUpdated for any more specific lobby update events
-            OnPlayerRemoved += (_player) => OnLobbyUpdated?.Invoke();
+            OnPlayerRemoved += (_player, wasKicked) => OnLobbyUpdated?.Invoke();
         }
 
         public void StartGame()
@@ -73,10 +72,10 @@ namespace stortromme.Data
             return player;
         }
 
-        public void RemovePlayer(Player player)
+        public void RemovePlayer(Player player, bool wasKicked = false)
         {
             Players.Remove(player);
-            OnPlayerRemoved?.Invoke(player);
+            OnPlayerRemoved?.Invoke(player, wasKicked);
 
             UpdatePages();
 
@@ -91,8 +90,7 @@ namespace stortromme.Data
 
         public void KickPlayer(Player player)
         {
-            OnPlayerKicked?.Invoke(player);
-            RemovePlayer(player);
+            RemovePlayer(player, wasKicked: true);
         }
 
         public void DisconnectPlayer(Player player)
