@@ -514,7 +514,8 @@
 	            this.snapshots.pop();
 	            this.undos.push(lastSnapshot);
 	            this.undos = this.undos.splice(-Math.abs(this.maxSnapshots));
-	            this.imageRestored = true;
+				this.imageRestored = true;
+				this.canvas.dispatchEvent(this.events.actionEndEvent);
 	        }
 	        else {
 	            this.logWarning('There are no more undos left.');
@@ -526,7 +527,8 @@
 	            if (lastUndo) {
 	                this.restoreCanvasSnapshot(lastUndo);
 	                this.snapshots.push(lastUndo);
-	                this.snapshots = this.snapshots.splice(-Math.abs(this.maxSnapshots));
+					this.snapshots = this.snapshots.splice(-Math.abs(this.maxSnapshots));
+					this.canvas.dispatchEvent(this.events.actionEndEvent);
 	            }
 	        }
 	        else {
