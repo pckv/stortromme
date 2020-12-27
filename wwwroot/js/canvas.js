@@ -55,6 +55,9 @@ window.initializeCanvas = (canvas, displayData) => {
         else if (event.code == 'KeyF') {
             toggleFillTool(cfd, buttons.fillButton);
         }
+        else if (event.code == 'KeyB') {
+            cycleLineWidth(cfd, buttons.lineWidthButton, buttons.fillButton);
+        }
     }
 }
 
@@ -110,6 +113,21 @@ function toggleFillTool(cfd, button) {
     }
 }
 
+function cycleLineWidth(cfd, button, fillButton) {
+    // Only disable bucket tool if it was toggled
+    if (cfd.isBucketToolEnabled) {
+        toggleFillTool(cfd, fillButton);
+        return;
+    }
+
+    // Cycle through 2px, 5px, 8px line widths
+    let width = getLineWidth();
+    width = width < 8 ? width + 3 : 2;
+
+    setLineWidth(width, cfd);
+    button.drawShape();
+}
+
 function createLineWidthButton(parent, cfd, fillButton) {
     const button = document.createElement('button');
     button.classList.add('btn', 'btn-outline-dark', 'icon-button');
@@ -125,20 +143,7 @@ function createLineWidthButton(parent, cfd, fillButton) {
         dot.style.backgroundColor = `rgb(${getColor().join(',')})`;
     }
 
-    // Cycle through 2px, 5px, 8px line widths
-    button.onclick = () => {
-        // Only disable bucket tool if it was toggled
-        if (cfd.isBucketToolEnabled) {
-            toggleFillTool(cfd, fillButton);
-            return;
-        }
-
-        let width = getLineWidth();
-        width = width < 8 ? width + 3 : 2;
-
-        setLineWidth(width, cfd);
-        button.drawShape();
-    }
+    button.onclick = () => cycleLineWidth(cfd, button, fillButton)
 
     button.drawShape();
 
