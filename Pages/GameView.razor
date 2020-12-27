@@ -29,7 +29,7 @@
                 <ul>
                     @foreach (var player in Lobby.Players)
                     {
-                        <li>
+                        <li style="list-style-type: none;">
                             <input type="checkbox" checked="@game.IsPlayerDone(player)" disabled>
                             <PlayerListItem Player=player></PlayerListItem>
                             @if (Player != player && Player.IsModerator)
