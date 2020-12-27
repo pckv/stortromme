@@ -34,7 +34,9 @@
                             <PlayerListItem Player=player></PlayerListItem>
                             @if (Player != player && Player.IsModerator)
                             {
-                                <button @onclick="() => LobbyService.DisonnectLobby(player, Lobby)" class="btn btn-outline-danger">Disconnect</button>
+                                <button @onclick="() => ToggleDisconnected(player)" class="btn btn-outline-danger">
+                                    @(player.IsConnected ? "Disconnect" : "Reconnect")
+                                </button>
                             }
                         </li>
                     }
@@ -91,9 +93,25 @@
         // Local book is set to null first to prevent a race condition
         var submitBook = book;
         book = null;
+
+        // Update state so that the local editing canvas is forced to refresh
         await InvokeAsync(StateHasChanged);
 
         game.SubmitPage(submitBook);
+    }
+
+    public void ToggleDisconnected(Player player)
+    {
+        // NOTE: this functionality is only included for testing purposes
+        if (player.IsConnected)
+        {
+            LobbyService.DisonnectLobby(player, Lobby);
+        }
+        else
+        {
+            player.IsConnected = true;
+            Lobby.LobbyUpdated();
+        }
     }
 
     public void Dispose()
