@@ -500,7 +500,8 @@
 	        image.src = backup;
 	        image.onload = function () {
 	            _this.imageRestored = true;
-	            _this.context.drawImage(image, 0, 0);
+				_this.context.drawImage(image, 0, 0);
+				_this.storeSnapshot();
 	            if (typeof callback === 'function')
 	                callback();
 	        };
