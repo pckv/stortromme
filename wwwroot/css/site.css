@@ -8,16 +8,12 @@ html, body {
     padding-top: 1.1rem;
 }
 
-.valid.modified:not([type=checkbox]) {
-    outline: 1px solid #26b050;
-}
-
 .invalid {
-    outline: 1px solid red;
+    background-color: #ffe6e6;
 }
 
 .validation-message {
-    color: red;
+    color: #ee4b4b;
 }
 
 #blazor-error-ui {
