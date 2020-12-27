@@ -37,20 +37,18 @@ namespace stortromme.Services
         public void LeaveLobby(Player player, Lobby lobby)
         {
             lobby.RemovePlayer(player);
-
-            // Remove lobby from service when empty
-            if (lobby.Players.Count == 0)
-            {
-                lobbies.Remove(lobby);
-            }
+            CleanupLobby(lobby);
         }
 
         public void DisonnectLobby(Player player, Lobby lobby)
         {
             lobby.DisconnectPlayer(player);
+            CleanupLobby(lobby);
+        }
 
-            // Remove lobby if every player disconnects
-            if (lobby.Players.All(p => !p.IsConnected))
+        private void CleanupLobby(Lobby lobby)
+        {
+            if (lobby.Players.Count == 0 || lobby.Players.All(p => !p.IsConnected))
             {
                 lobbies.Remove(lobby);
             }
