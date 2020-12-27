@@ -137,7 +137,7 @@ function createLineWidthButton(parent, cfd, fillButton) {
     button.appendChild(dot);
 
     button.drawShape = () => {
-        const dotRadius = `${getLineWidth()}px`;
+        const dotRadius = `${getLineWidth() * 2}px`;
         dot.style.width = dotRadius;
         dot.style.height = dotRadius;
         dot.style.backgroundColor = `rgb(${getColor().join(',')})`;
