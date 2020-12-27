@@ -65,17 +65,8 @@ function createButtons(canvas, cfd) {
     tools.prepend(rightTools);
     tools.prepend(leftTools);
 
-    const lineWidthButton = createLineWidthButton(rightTools, cfd);
-    createIconButton(rightTools, 'format_color_fill', button => {
-        const state = cfd.toggleBucketTool();
-        if (!state) {
-            button.classList.remove('btn-dark');
-            button.classList.add('btn-outline-dark');
-        } else {
-            button.classList.remove('btn-outline-dark');
-            button.classList.add('btn-dark');
-        }
-    });
+    const fillButton = createIconButton(rightTools, 'format_color_fill', button => toggleFillTool(cfd, button));
+    const lineWidthButton = createLineWidthButton(rightTools, cfd, fillButton);
     
     createIconButton(leftTools, 'redo', () => cfd.redo());
     createIconButton(leftTools, 'undo', () => cfd.undo());
@@ -90,9 +81,21 @@ function createIconButton(parent, icon, action) {
     button.onclick = () => action(button);
     button.innerHTML = `<span class="material-icons canvas-icon">${icon}</span>`;
     parent.prepend(button);
+    return button;
 }
 
-function createLineWidthButton(parent, cfd) {
+function toggleFillTool(cfd, button) {
+    const state = cfd.toggleBucketTool();
+    if (!state) {
+        button.classList.remove('btn-dark');
+        button.classList.add('btn-outline-dark');
+    } else {
+        button.classList.remove('btn-outline-dark');
+        button.classList.add('btn-dark');
+    }
+}
+
+function createLineWidthButton(parent, cfd, fillButton) {
     const button = document.createElement('button');
     button.classList.add('btn', 'btn-outline-dark', 'icon-button');
     
@@ -109,6 +112,12 @@ function createLineWidthButton(parent, cfd) {
 
     // Cycle through 2px, 5px, 8px line widths
     button.onclick = () => {
+        // Only disable bucket tool if it was toggled
+        if (cfd.isBucketToolEnabled) {
+            toggleFillTool(cfd, fillButton);
+            return;
+        }
+
         let width = getLineWidth();
         width = width < 8 ? width + 3 : 2;
 
@@ -118,7 +127,7 @@ function createLineWidthButton(parent, cfd) {
 
     button.drawShape();
 
-    parent.prepend(button);
+    parent.append(button);
     return button;
 }
 
