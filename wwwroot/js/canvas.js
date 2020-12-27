@@ -37,13 +37,25 @@ window.initializeCanvas = (canvas, displayData) => {
     }
 
     // create all interactive elements
-    createButtons(canvas, cfd);
+    const buttons = createButtons(canvas, cfd);
 
     // store local snapshot after every action
-    cfd.on({ event: 'actionend', counter: 10 }, () => {
-        console.log('saved locally');
+    cfd.on({ event: 'actionend' }, () => {
         localStorage.canvasCache = cfd.save();
     });
+
+    // bind keyboard buttons
+    document.onkeydown = event => {
+        if (event.code == 'KeyZ' && !event.shiftKey) {
+            cfd.undo();
+        }
+        else if ((event.code == 'KeyZ' && event.shiftKey) || (event.code == 'KeyY')) {
+            cfd.redo();
+        }
+        else if (event.code == 'KeyF') {
+            toggleFillTool(cfd, buttons.fillButton);
+        }
+    }
 }
 
 window.saveCanvas = (canvas) => {
@@ -51,6 +63,7 @@ window.saveCanvas = (canvas) => {
 }
 
 window.disposeCanvas = (canvas) => {
+    document.onkeydown = null;
     delete window.cfds[canvas.id];
     delete localStorage.canvasCache;
 }
@@ -73,6 +86,8 @@ function createButtons(canvas, cfd) {
     createIconButton(leftTools, 'delete', () => cfd.clear());
 
     createColorButtons(canvas, cfd, lineWidthButton);
+
+    return { fillButton, lineWidthButton }
 }
 
 function createIconButton(parent, icon, action) {
