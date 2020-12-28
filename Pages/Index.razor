@@ -11,19 +11,19 @@
 
 @implements IDisposable
 
-@if (player != null)
+@if (lobby != null && player != null)
 {
-    if (lobby?.Game?.HasGameEnded == true)
+    if (lobby.State == GameState.InLobby)
     {
-        <PresentView Player=player Lobby=lobby></PresentView>
+        <LobbyView Player=player Lobby=lobby></LobbyView>
     }
-    else if (lobby?.Game != null)
+    else if (lobby.State == GameState.Started)
     {
         <GameView Player=player Lobby=lobby></GameView>
     }
-    else if (lobby != null)
+    else if (lobby.State == GameState.Presenting)
     {
-        <LobbyView Player=player Lobby=lobby></LobbyView>
+        <PresentView Player=player Lobby=lobby></PresentView>
     }
 }
 else

@@ -53,7 +53,7 @@
             @if (Player.IsModerator)
             {
                 <div class="form-group">
-                    <button @onclick="ReturnToLobby" class="btn btn-primary">Return to Lobby</button>
+                    <button @onclick="Lobby.ReturnToLobby" class="btn btn-primary">Return to Lobby</button>
                 </div>
             }
         </div>
@@ -83,12 +83,6 @@
     public void LeaveLobby()
     {
         LobbyService.LeaveLobby(Player, Lobby);
-    }
-
-    public void ReturnToLobby()
-    {
-        Lobby.Game = null;
-        Lobby.LobbyUpdated();
     }
 
     public void PresentBook(Player player)

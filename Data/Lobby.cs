@@ -10,6 +10,7 @@ namespace stortromme.Data
         public IList<Player> Players { get; set; }
         public Settings Settings { get; set; }
         public Game Game { get; set; }
+        public GameState State { get; set; }
 
         public event Action OnLobbyUpdated;
         public event Action<Player, bool> OnPlayerRemoved;
@@ -18,6 +19,7 @@ namespace stortromme.Data
         public Lobby()
         {
             Players = new List<Player>();
+            State = GameState.InLobby;
 
             // Invoke OnLobbyUpdated for any more specific lobby update events
             OnPlayerRemoved += (_player, wasKicked) => OnLobbyUpdated?.Invoke();
@@ -26,7 +28,23 @@ namespace stortromme.Data
         public void StartGame()
         {
             Game = new Game(Players, Settings); 
+
+            Game.OnGameEnded += OnGameEnded;
+            State = GameState.Started;
             OnGameStarted?.Invoke();
+        }
+
+        public void ReturnToLobby()
+        {
+            Game = null;
+            State = GameState.InLobby;
+            OnLobbyUpdated?.Invoke();
+        }
+
+        public void OnGameEnded()
+        {
+            State = GameState.Presenting;
+            Game.OnGameEnded -= OnGameEnded;
         }
 
         public bool HasConnectedPlayer(string name)
