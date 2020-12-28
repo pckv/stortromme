@@ -116,7 +116,7 @@ else
         }
         catch (GameInProgressException)
         {
-            errorMessage = "The game in lobby {lobbyForm.LobbyName} has already started";
+            errorMessage = $"The game in lobby {lobbyForm.LobbyName} has already started";
             return;
         }
 
