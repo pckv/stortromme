@@ -177,6 +177,7 @@
 	    };
 	    CanvasFreeDrawing.prototype.touchStart = function (event) {
 	        if (event.changedTouches.length > 0) {
+				event.preventDefault();
 				var _a = event.changedTouches[0], pageX = _a.pageX, pageY = _a.pageY, identifier = _a.identifier;
 	            var x = this.scaledX(pageX - this.canvas.offsetLeft);
 	            var y = this.scaledY(pageY - this.canvas.offsetTop);
@@ -186,6 +187,7 @@
 	    };
 	    CanvasFreeDrawing.prototype.touchMove = function (event) {
 	        if (event.changedTouches.length > 0) {
+				event.preventDefault();
 				var _a = event.changedTouches[0], pageX = _a.pageX, pageY = _a.pageY, identifier = _a.identifier;
 	            var x = this.scaledX(pageX - this.canvas.offsetLeft);
 	            var y = this.scaledX(pageY - this.canvas.offsetTop);
@@ -197,7 +199,8 @@
 	            this.drawLine(x, y, event);
 	        }
 	    };
-	    CanvasFreeDrawing.prototype.touchEnd = function () {
+	    CanvasFreeDrawing.prototype.touchEnd = function (event) {
+			event.preventDefault();
 	        this.handleEndDrawing();
 	        this.canvas.dispatchEvent(this.events.touchEndEvent);
 	    };
