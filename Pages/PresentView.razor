@@ -40,7 +40,7 @@
                                         <button class="btn btn-sm btn-warning" @onclick="FlipBook">Flip book</button>
                                     }
                                 }
-                                else
+                                else if (game.Books.Any(b => b.Master == player))
                                 {
                                     <button class="btn btn-sm btn-outline-primary" @onclick="() => PresentBook(player)">Present book</button>
                                 }

@@ -19,7 +19,10 @@ namespace stortromme.Services
             Lobby lobby = lobbies.FirstOrDefault(l => l.Name == lobbyName);
             if (lobby == null)
             {
-                lobby = new Lobby { Name = lobbyName, Settings = new Settings() };
+                lobby = new Lobby
+                {
+                    Name = lobbyName 
+                };
                 lobbies.Add(lobby);
             }
 

@@ -19,6 +19,7 @@ namespace stortromme.Data
         public Lobby()
         {
             Players = new List<Player>();
+            Settings = new Settings();
             State = GameState.InLobby;
 
             // Invoke OnLobbyUpdated for any more specific lobby update events
@@ -68,14 +69,15 @@ namespace stortromme.Data
 
             // Only allow joining if the game is not in progress, or this player
             // is reconnecting
-            if ((player == null || player.IsConnected) && Game != null)
+            if (State == GameState.Started && (player == null || player.IsConnected))
             {
                 throw new GameInProgressException();
             }
 
             if (player == null)
             {
-                player = new Player { 
+                player = new Player
+                { 
                     Name = name,
                     IsModerator = Players.Count == 0,
                 };
